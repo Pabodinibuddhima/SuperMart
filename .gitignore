@@ -1,0 +1,23 @@
+# Maven
+target/
+
+# NetBeans
+nbproject/private/
+nbactions.xml
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Environment / secrets
+.env
+
+# Local database credentials
+src/main/resources/db.properties
