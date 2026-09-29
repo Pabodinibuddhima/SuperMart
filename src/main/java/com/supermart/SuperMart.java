@@ -29,6 +29,8 @@ public class SuperMart {
 
 */
 
+
+/*
 package com.supermart;
 
 import com.supermart.dao.ProductDAO;
@@ -66,5 +68,26 @@ public class SuperMart {
 
             e.printStackTrace();
         }
+    }
+}
+
+*/
+
+
+package com.supermart;
+
+import com.supermart.view.MainFrame;
+import javax.swing.SwingUtilities;
+
+public class SuperMart {
+
+    public static void main(String[] args) {
+
+        SwingUtilities.invokeLater(() -> {
+
+            MainFrame mainFrame = new MainFrame();
+            mainFrame.setVisible(true);
+
+        });
     }
 }
