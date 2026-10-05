@@ -100,65 +100,96 @@ public class ProductDAO {
 
         return products;
     }
-    
-    public boolean addProduct(Product product) throws SQLException {
-        /*
-        String sql = """
-            INSERT INTO products
-            (
-                barcode,
-                name,
-                category_id,
-                supplier_id,
-                cost_price,
-                selling_price,
-                quantity,
-                reorder_level,
-                status
-            )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """; */
-        String sql = """
-            UPDATE products
-            SET barcode = ?,
-                name = ?,
-                category_id = ?,
-                supplier_id = ?,
-                cost_price = ?,
-                selling_price = ?,
-                quantity = ?,
-                reorder_level = ?,
-                status = ?
-            WHERE product_id = ?
-            """;
-        
+        public boolean addProduct(
+                Product product
+        ) throws SQLException {
 
-        try (
-            Connection connection = DBConnection.getConnection();
-            PreparedStatement statement = connection.prepareStatement(sql)
-        ) {
+            String sql = """
+                INSERT INTO products
+                (
+                    barcode,
+                    name,
+                    category_id,
+                    supplier_id,
+                    cost_price,
+                    selling_price,
+                    quantity,
+                    reorder_level,
+                    status
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """;
 
-            statement.setString(1, product.getBarcode());
-            statement.setString(2, product.getName());
-            statement.setInt(3, product.getCategoryId());
+            try (
+                Connection connection =
+                        DBConnection.getConnection();
 
-            
-            if (product.getSupplierId() == null) {
-                statement.setNull(4, java.sql.Types.INTEGER);
-            } else {
-                statement.setInt(4, product.getSupplierId());
+                PreparedStatement statement =
+                        connection.prepareStatement(sql)
+            ) {
+
+                statement.setString(
+                        1,
+                        product.getBarcode()
+                );
+
+                statement.setString(
+                        2,
+                        product.getName()
+                );
+
+                statement.setInt(
+                        3,
+                        product.getCategoryId()
+                );
+
+
+                if (product.getSupplierId() == null) {
+
+                    statement.setNull(
+                            4,
+                            Types.INTEGER
+                    );
+
+                } else {
+
+                    statement.setInt(
+                            4,
+                            product.getSupplierId()
+                    );
+                }
+
+
+                statement.setBigDecimal(
+                        5,
+                        product.getCostPrice()
+                );
+
+                statement.setBigDecimal(
+                        6,
+                        product.getSellingPrice()
+                );
+
+                statement.setInt(
+                        7,
+                        product.getQuantity()
+                );
+
+                statement.setInt(
+                        8,
+                        product.getReorderLevel()
+                );
+
+                statement.setString(
+                        9,
+                        product.getStatus()
+                );
+
+
+                return statement.executeUpdate() > 0;
             }
-
-            statement.setBigDecimal(5, product.getCostPrice());
-            statement.setBigDecimal(6, product.getSellingPrice());
-            statement.setInt(7, product.getQuantity());
-            statement.setInt(8, product.getReorderLevel());
-            statement.setString(9, product.getStatus());
-
-            return statement.executeUpdate() > 0;
         }
-    }
-    
+
     public boolean updateProduct(Product product) throws SQLException {
 
         String sql = """
@@ -230,12 +261,14 @@ public class ProductDAO {
         }
     }
     
-    public boolean deactivateProduct(int productId)
-        throws SQLException {
+    public boolean updateProductStatus(
+            int productId,
+            String status
+    ) throws SQLException {
 
         String sql = """
             UPDATE products
-            SET status = 'INACTIVE'
+            SET status = ?
             WHERE product_id = ?
             """;
 
@@ -247,13 +280,18 @@ public class ProductDAO {
                     connection.prepareStatement(sql)
         ) {
 
-            statement.setInt(1, productId);
+            statement.setString(
+                    1,
+                    status
+            );
+
+            statement.setInt(
+                    2,
+                    productId
+            );
 
             return statement.executeUpdate() > 0;
         }
     }
-
-    
-
     
 }

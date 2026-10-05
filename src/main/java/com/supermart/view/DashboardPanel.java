@@ -10,15 +10,15 @@
  * @author pabodini
  */
 
-/*
-public class DashboardPanel {
-    
-}
-
-*/
-
 package com.supermart.view;
 
+import com.supermart.dao.DashboardDAO;
+import com.supermart.model.Product;
+
+import java.sql.SQLException;
+import java.util.List;
+
+import javax.swing.JOptionPane;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -48,8 +48,18 @@ public class DashboardPanel extends JPanel {
 
     private static final Color BORDER =
             new Color(230, 232, 235);
+    
+    
+    private final DashboardDAO dashboardDAO;
+
+    private JLabel productsValueLabel;
+    private JLabel lowStockValueLabel;
+
+    private JPanel lowStockContentPanel;
 
     public DashboardPanel() {
+        
+        dashboardDAO = new DashboardDAO();
 
         setLayout(new BorderLayout());
         setBackground(BACKGROUND);
@@ -127,22 +137,28 @@ public class DashboardPanel extends JPanel {
                         "Sales completed today"
                 )
         );
+        productsValueLabel = createValueLabel("0");
 
         statisticsPanel.add(
-                createStatCard(
-                        "Products",
-                        "3",
-                        "Products in inventory"
+                createDynamicStatCard(
+                        "Active Products",
+                        productsValueLabel,
+                        "Available for sale" //Products in inventory
                 )
         );
 
+
+        lowStockValueLabel = createValueLabel("0");
+
         statisticsPanel.add(
-                createStatCard(
+                createDynamicStatCard(
                         "Low Stock",
-                        "1",
+                        lowStockValueLabel,
                         "Needs attention"
                 )
         );
+
+        
 
         dashboardContent.add(statisticsPanel);
 
@@ -162,18 +178,18 @@ public class DashboardPanel extends JPanel {
                         "Recent Sales",
                         "No sales have been recorded yet."
                 )
-        );
-
+        );     
+        
         lowerSection.add(
-                createSectionCard(
-                        "Low Stock",
-                        "Rice 5kg     8 remaining"
-                )
+                createLowStockSection()
         );
-
+        
+        
         dashboardContent.add(lowerSection);
 
         add(dashboardContent, BorderLayout.NORTH);
+        
+        loadDashboardData();
     }
 
     private JPanel createStatCard(
@@ -228,7 +244,184 @@ public class DashboardPanel extends JPanel {
 
         return card;
     }
+    
+    private JPanel createLowStockSection() {
 
+        JPanel card =
+                new JPanel(
+                        new BorderLayout()
+                );
+
+        card.setBackground(
+                CARD_BACKGROUND
+        );
+
+        card.setPreferredSize(
+                new Dimension(0, 220)
+        );
+
+        card.setBorder(
+                BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(
+                                BORDER
+                        ),
+                        BorderFactory.createEmptyBorder(
+                                20, 22, 20, 22
+                        )
+                )
+        );
+
+
+        JLabel titleLabel =
+                new JLabel("Low Stock");
+
+        titleLabel.setFont(
+                new Font(
+                        "SansSerif",
+                        Font.BOLD,
+                        16
+                )
+        );
+
+        titleLabel.setForeground(
+                TEXT_PRIMARY
+        );
+
+
+        JPanel header =
+                new JPanel(
+                        new FlowLayout(
+                                FlowLayout.LEFT,
+                                0,
+                                0
+                        )
+                );
+
+        header.setOpaque(false);
+
+        header.add(titleLabel);
+
+
+        lowStockContentPanel =
+                new JPanel();
+
+        lowStockContentPanel.setOpaque(false);
+
+        lowStockContentPanel.setLayout(
+                new BoxLayout(
+                        lowStockContentPanel,
+                        BoxLayout.Y_AXIS
+                )
+        );
+
+
+        card.add(
+                header,
+                BorderLayout.NORTH
+        );
+
+        card.add(
+                lowStockContentPanel,
+                BorderLayout.CENTER
+        );
+
+        return card;
+    }
+    private JLabel createValueLabel(
+            String initialValue
+    ) {
+
+        JLabel label =
+                new JLabel(initialValue);
+
+        label.setFont(
+                new Font(
+                        "SansSerif",
+                        Font.BOLD,
+                        24
+                )
+        );
+
+        label.setForeground(TEXT_PRIMARY);
+
+        return label;
+    }
+    private JPanel createDynamicStatCard(
+            String title,
+            JLabel valueLabel,
+            String description
+    ) {
+
+        JPanel card = new JPanel();
+
+        card.setLayout(
+                new BoxLayout(
+                        card,
+                        BoxLayout.Y_AXIS
+                )
+        );
+
+        card.setBackground(CARD_BACKGROUND);
+
+        card.setBorder(
+                BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(
+                                BORDER
+                        ),
+                        BorderFactory.createEmptyBorder(
+                                18, 20, 18, 20
+                        )
+                )
+        );
+
+        JLabel titleLabel =
+                new JLabel(title);
+
+        titleLabel.setFont(
+                new Font(
+                        "SansSerif",
+                        Font.PLAIN,
+                        12
+                )
+        );
+
+        titleLabel.setForeground(
+                TEXT_SECONDARY
+        );
+
+
+        JLabel descriptionLabel =
+                new JLabel(description);
+
+        descriptionLabel.setFont(
+                new Font(
+                        "SansSerif",
+                        Font.PLAIN,
+                        11
+                )
+        );
+
+        descriptionLabel.setForeground(
+                TEXT_SECONDARY
+        );
+
+
+        card.add(titleLabel);
+
+        card.add(
+                Box.createVerticalStrut(10)
+        );
+
+        card.add(valueLabel);
+
+        card.add(
+                Box.createVerticalStrut(7)
+        );
+
+        card.add(descriptionLabel);
+
+        return card;
+    }
     private JPanel createSectionCard(
             String title,
             String content
@@ -283,5 +476,129 @@ public class DashboardPanel extends JPanel {
         card.add(contentLabel, BorderLayout.CENTER);
 
         return card;
+    }
+
+    public final void loadDashboardData() {
+
+        try {
+
+            // ---------------------------------
+            // Statistics
+            // ---------------------------------
+
+            int productCount =
+                    dashboardDAO
+                            .getActiveProductCount();
+
+            int lowStockCount =
+                    dashboardDAO
+                            .getLowStockCount();
+
+
+            productsValueLabel.setText(
+                    String.valueOf(productCount)
+            );
+
+            lowStockValueLabel.setText(
+                    String.valueOf(lowStockCount)
+            );
+
+
+            // ---------------------------------
+            // Low-stock products
+            // ---------------------------------
+
+            List<Product> lowStockProducts =
+                    dashboardDAO
+                            .getLowStockProducts();
+
+
+            lowStockContentPanel.removeAll();
+
+
+            if (lowStockProducts.isEmpty()) {
+
+                JLabel emptyLabel =
+                        new JLabel(
+                                "All products are sufficiently stocked."
+                        );
+
+                emptyLabel.setFont(
+                        new Font(
+                                "SansSerif",
+                                Font.PLAIN,
+                                13
+                        )
+                );
+
+                emptyLabel.setForeground(
+                        TEXT_SECONDARY
+                );
+
+                emptyLabel.setBorder(
+                        BorderFactory.createEmptyBorder(
+                                18, 0, 0, 0
+                        )
+                );
+
+                lowStockContentPanel.add(
+                        emptyLabel
+                );
+
+            } else {
+
+                lowStockContentPanel.add(
+                        Box.createVerticalStrut(14)
+                );
+
+
+                for (Product product
+                        : lowStockProducts) {
+
+                    JLabel productLabel =
+                            new JLabel(
+                                    product.getName()
+                                            + "     "
+                                            + product.getQuantity()
+                                            + " remaining"
+                            );
+
+                    productLabel.setFont(
+                            new Font(
+                                    "SansSerif",
+                                    Font.PLAIN,
+                                    13
+                            )
+                    );
+
+                    productLabel.setForeground(
+                            TEXT_SECONDARY
+                    );
+
+                    lowStockContentPanel.add(
+                            productLabel
+                    );
+
+                    lowStockContentPanel.add(
+                            Box.createVerticalStrut(8)
+                    );
+                }
+            }
+
+
+            lowStockContentPanel.revalidate();
+            lowStockContentPanel.repaint();
+
+
+        } catch (SQLException e) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Unable to load dashboard data.\n"
+                            + e.getMessage(),
+                    "Database Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
     }
 }

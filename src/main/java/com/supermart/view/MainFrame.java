@@ -6,7 +6,6 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GridLayout;
 import java.awt.Insets;
 
 import javax.swing.BorderFactory;
@@ -31,7 +30,14 @@ public class MainFrame extends JFrame {
     // ---------- Main content switching ----------
     private final CardLayout cardLayout;
     private final JPanel contentPanel;
+    private final DashboardPanel dashboardPanel;
+    private final ProductsPanel productsPanel;
+    private final InventoryPanel inventoryPanel;
+    private final CustomersPanel customersPanel;
+    private final SuppliersPanel suppliersPanel;
+    
     private JButton selectedNavigationButton;
+    
 
     public MainFrame() {
 
@@ -43,22 +49,63 @@ public class MainFrame extends JFrame {
         setLocationRelativeTo(null);
 
         setLayout(new BorderLayout());
-        
-        
-        
-
-        
 
         // Main content
         cardLayout = new CardLayout();
         contentPanel = new JPanel(cardLayout);
         contentPanel.setBackground(BACKGROUND);
+        
+        
+        // ==========================================
+        // CREATE APPLICATION PANELS
+        // ==========================================
 
-        contentPanel.add(new DashboardPanel(), "DASHBOARD");
+        dashboardPanel =
+                new DashboardPanel();
+
+        productsPanel =
+                new ProductsPanel();
+
+        inventoryPanel =
+                new InventoryPanel();
+
+        customersPanel =
+                new CustomersPanel();
         
-        contentPanel.add(new ProductsPanel(), "PRODUCTS");
+        suppliersPanel =
+                new SuppliersPanel();
+
+
+        // ==========================================
+        // REGISTER PANELS WITH CARDLAYOUT
+        // ==========================================
+
+        contentPanel.add(
+                dashboardPanel,
+                "DASHBOARD"
+        );
+
+        contentPanel.add(
+                productsPanel,
+                "PRODUCTS"
+        );
+
+        contentPanel.add(
+                inventoryPanel,
+                "INVENTORY"
+        );
+
+        contentPanel.add(
+                customersPanel,
+                "CUSTOMERS"
+        );
         
         
+        contentPanel.add(
+                suppliersPanel,
+                "SUPPLIERS"
+        );
+  
         // Sidebar
         add(createSidebar(), BorderLayout.WEST);
 
@@ -106,15 +153,11 @@ public class MainFrame extends JFrame {
         // ---------- Navigation ----------
         JButton dashboardButton =
                 createNavigationButton("Dashboard");
-
-        /*
-        JButton salesButton =
-                createNavigationButton("Sales", false);
-        */
-        
         
         JButton salesButton =
                 createNavigationButton("Sales");
+        
+        
 
         JButton productsButton =
                 createNavigationButton("Products");
@@ -142,7 +185,9 @@ public class MainFrame extends JFrame {
         // ==========================================
         
         dashboardButton.addActionListener(e -> {
-
+            
+            dashboardPanel.loadDashboardData();
+            
             cardLayout.show(
                     contentPanel,
                     "DASHBOARD"
@@ -152,10 +197,24 @@ public class MainFrame extends JFrame {
                     dashboardButton
             );
         });
-        
-        
+
+        inventoryButton.addActionListener(e -> {
+
+            inventoryPanel.refreshPanel();
+
+            cardLayout.show(
+                    contentPanel,
+                    "INVENTORY"
+            );
+
+            selectNavigationButton(
+                    inventoryButton
+            );
+        });
         
         productsButton.addActionListener(e -> {
+
+            productsPanel.refreshPanel();
 
             cardLayout.show(
                     contentPanel,
@@ -165,10 +224,36 @@ public class MainFrame extends JFrame {
             selectNavigationButton(
                     productsButton
             );
+        });        
+        
+        customersButton.addActionListener(e -> {
+
+            customersPanel.refreshPanel();
+
+            cardLayout.show(
+                    contentPanel,
+                    "CUSTOMERS"
+            );
+
+            selectNavigationButton(
+                    customersButton
+            );
         });
-        
-        
-        
+    
+        suppliersButton.addActionListener(e -> {
+
+            suppliersPanel.refreshPanel();
+
+            cardLayout.show(
+                    contentPanel,
+                    "SUPPLIERS"
+            );
+
+            selectNavigationButton(
+                    suppliersButton
+            );
+        });
+
 
         sidebar.add(dashboardButton);
         sidebar.add(Box.createVerticalStrut(5));
@@ -308,6 +393,5 @@ public class MainFrame extends JFrame {
 
         selectedNavigationButton = button;
     }
-    
-    
+
 }

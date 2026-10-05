@@ -6,6 +6,7 @@ import com.supermart.dao.SupplierDAO;
 import com.supermart.model.Category;
 import com.supermart.model.Product;
 import com.supermart.model.Supplier;
+import com.supermart.view.component.PlaceholderTextField;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,9 +14,18 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 
 public class AddProductDialog extends JDialog {
+    
+    private final PlaceholderTextField barcodeField =
+            new PlaceholderTextField(
+                    "e.g. 100004",
+                    20
+            );
 
-    private final JTextField barcodeField = new JTextField();
-    private final JTextField nameField = new JTextField();
+    private final PlaceholderTextField nameField =
+            new PlaceholderTextField(
+                    "e.g. Orange Juice 1L",
+                    20
+            );
 
     private final JComboBox<Category> categoryComboBox =
             new JComboBox<>();
@@ -23,10 +33,29 @@ public class AddProductDialog extends JDialog {
     private final JComboBox<Supplier> supplierComboBox =
             new JComboBox<>();
 
-    private final JTextField costPriceField = new JTextField();
-    private final JTextField sellingPriceField = new JTextField();
-    private final JTextField quantityField = new JTextField();
-    private final JTextField reorderLevelField = new JTextField();
+    private final PlaceholderTextField costPriceField =
+            new PlaceholderTextField(
+                    "e.g. 350.00",
+                    20
+            );
+
+    private final PlaceholderTextField sellingPriceField =
+            new PlaceholderTextField(
+                    "e.g. 450.00",
+                    20
+            );
+
+    private final PlaceholderTextField quantityField =
+            new PlaceholderTextField(
+                    "e.g. 20",
+                    20
+            );
+
+    private final PlaceholderTextField reorderLevelField =
+            new PlaceholderTextField(
+                    "e.g. 10",
+                    20
+            );
 
     private final ProductDAO productDAO;
 
@@ -40,6 +69,43 @@ public class AddProductDialog extends JDialog {
         super(parent, "Add Product", true);
 
         productDAO = new ProductDAO();
+        
+        
+        barcodeField.setToolTipText(
+                "Enter the unique barcode used to identify the product"
+        );
+
+        nameField.setToolTipText(
+                "Enter the product name"
+        );
+
+        categoryComboBox.setToolTipText(
+                "Select the category this product belongs to"
+        );
+
+        supplierComboBox.setToolTipText(
+                "Select the supplier that provides this product"
+        );
+
+        costPriceField.setToolTipText(
+                "Enter the purchase cost of one unit"
+        );
+
+        sellingPriceField.setToolTipText(
+                "Enter the selling price of one unit"
+        );
+
+        quantityField.setToolTipText(
+                "Enter the opening stock quantity"
+        );
+
+        reorderLevelField.setToolTipText(
+                "Enter the stock level at which this product should be considered low stock"
+        );
+
+        
+        
+        
 
         setSize(520, 650);
         setLocationRelativeTo(parent);
@@ -558,31 +624,19 @@ public class AddProductDialog extends JDialog {
             product.setSellingPrice(sellingPrice);
             product.setQuantity(quantity);
             product.setReorderLevel(reorderLevel);
+            
+            if (productToEdit == null) {
 
-            product.setStatus("ACTIVE");
-
-            // -------------------------
-            // Save to MySQL
-            // -------------------------
-            /*
-            boolean saved =
-                    productDAO.addProduct(product); 
-
-            if (saved) {
-
-                productAdded = true;
-
-                JOptionPane.showMessageDialog(
-                        this,
-                        "Product added successfully.",
-                        "Success",
-                        JOptionPane.INFORMATION_MESSAGE
+                product.setStatus(
+                        "ACTIVE"
                 );
 
-                dispose();
-            }
+            } else {
 
-            */
+                product.setStatus(
+                        productToEdit.getStatus()
+                );
+            }
             
             if (productToEdit == null) {
 
@@ -681,6 +735,4 @@ public class AddProductDialog extends JDialog {
     public boolean isProductUpdated() {
         return productUpdated;
     }
-    
-    
 }

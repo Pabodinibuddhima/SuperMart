@@ -127,4 +127,11 @@ public class Product {
     public boolean isLowStock() {
         return quantity <= reorderLevel;
     }
+    
+    @Override
+    public String toString() {
+        return name;
+    }
+
+    
 }

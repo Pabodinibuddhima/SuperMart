@@ -6,14 +6,16 @@ package com.supermart.view;
 
 import com.supermart.dao.ProductDAO;
 import com.supermart.model.Product;
+import com.supermart.view.component.SuperMartTableStyle;
+import com.supermart.view.component.PlaceholderTextField;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
+import javax.swing.table.TableRowSorter;
+
 import java.awt.*;
 import java.sql.SQLException;
 import java.util.List;
-
 
 /**
  *
@@ -43,6 +45,19 @@ public class ProductsPanel extends JPanel {
 
     private JTable productTable;
     private DefaultTableModel tableModel;
+    
+    
+    private TableRowSorter<DefaultTableModel> tableSorter;
+
+    //private JTextField searchField;
+    private PlaceholderTextField searchField;
+    private JComboBox<String> statusFilter;
+    
+    private JButton editButton;
+    private JButton statusButton;
+    
+    private JComboBox<String> sortByCombo;
+    private JComboBox<String> sortOrderCombo;
 
     public ProductsPanel() {
 
@@ -162,14 +177,12 @@ public class ProductsPanel extends JPanel {
             }
         });
         
+        statusButton =
+            new JButton("Deactivate");
         
+        statusButton.setEnabled(false);
         
-        //
-        
-        JButton deactivateProductButton =
-                new JButton("Deactivate");
-
-        deactivateProductButton.setFont(
+        statusButton.setFont(
                 new Font(
                         "SansSerif",
                         Font.PLAIN,
@@ -177,9 +190,9 @@ public class ProductsPanel extends JPanel {
                 )
         );
 
-        deactivateProductButton.setFocusPainted(false);
+        statusButton.setFocusPainted(false);
 
-        deactivateProductButton.setCursor(
+        statusButton.setCursor(
                 Cursor.getPredefinedCursor(
                         Cursor.HAND_CURSOR
                 )
@@ -187,119 +200,16 @@ public class ProductsPanel extends JPanel {
         
         
         
-        deactivateProductButton.addActionListener(e -> {
-
-        int selectedRow =
-                productTable.getSelectedRow();
-
-        if (selectedRow == -1) {
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Please select a product to deactivate.",
-                    "No Product Selected",
-                    JOptionPane.WARNING_MESSAGE
-            );
-
-            return;
-        }
-
-        int productId =
-                (int) tableModel.getValueAt(
-                        selectedRow,
-                        0
-                );
-
-        String productName =
-                tableModel.getValueAt(
-                        selectedRow,
-                        2
-                ).toString();
-
-        String currentStatus =
-                tableModel.getValueAt(
-                        selectedRow,
-                        7
-                ).toString();
-
-        if ("INACTIVE".equals(currentStatus)) {
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    productName + " is already inactive.",
-                    "Already Inactive",
-                    JOptionPane.INFORMATION_MESSAGE
-            );
-
-            return;
-        }
-
-        int choice =
-                JOptionPane.showConfirmDialog(
-                        this,
-                        "Deactivate \"" + productName + "\"?\n\n"
-                                + "The product will remain in the database "
-                                + "but will no longer be active.",
-                        "Confirm Deactivation",
-                        JOptionPane.YES_NO_OPTION,
-                        JOptionPane.WARNING_MESSAGE
-                );
-
-        if (choice != JOptionPane.YES_OPTION) {
-            return;
-        }
-
-        try {
-
-            boolean deactivated =
-                    productDAO.deactivateProduct(
-                            productId
-                    );
-
-            if (deactivated) {
-
-                JOptionPane.showMessageDialog(
-                        this,
-                        "Product deactivated successfully.",
-                        "Success",
-                        JOptionPane.INFORMATION_MESSAGE
-                );
-
-                loadProducts();
-            }
-
-        } catch (SQLException exception) {
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Unable to deactivate product.\n"
-                            + exception.getMessage(),
-                    "Database Error",
-                    JOptionPane.ERROR_MESSAGE
-            );
-        }
-        });
-
+        statusButton.addActionListener(
+                e -> changeSelectedProductStatus()
+        );
         
+        editButton =
+        new JButton("Edit Product");
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        //
-        
-        
-        
-        JButton editProductButton =
-                new JButton("Edit Product");
+        editButton.setEnabled(false);
 
-        editProductButton.setFont(
+        editButton.setFont(
                 new Font(
                         "SansSerif",
                         Font.PLAIN,
@@ -310,25 +220,16 @@ public class ProductsPanel extends JPanel {
         
         
 
-        editProductButton.setFocusPainted(false);
+        editButton.setFocusPainted(false);
 
-        editProductButton.setCursor(
+        editButton.setCursor(
                 Cursor.getPredefinedCursor(
                         Cursor.HAND_CURSOR
                 )
         );
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        editProductButton.addActionListener(e -> {
+ 
+        editButton.addActionListener(e -> {
 
             int selectedRow =
                     productTable.getSelectedRow();
@@ -344,12 +245,22 @@ public class ProductsPanel extends JPanel {
 
                 return;
             }
+            
+            
+            int modelRow =
+                    productTable
+                            .convertRowIndexToModel(
+                                    selectedRow
+                            );
+
+            
 
             int productId =
                     (int) tableModel.getValueAt(
-                            selectedRow,
+                            modelRow,
                             0
                     );
+            
 
             Product selectedProduct = null;
 
@@ -414,27 +325,166 @@ public class ProductsPanel extends JPanel {
         actionPanel.setOpaque(false);
         
         
-        actionPanel.add(deactivateProductButton);
-        actionPanel.add(editProductButton);
+        actionPanel.add(statusButton);
+        actionPanel.add(editButton);
         actionPanel.add(addProductButton);
 
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-
         header.add(titlePanel, BorderLayout.WEST);
-        //header.add(addProductButton, BorderLayout.EAST);
         header.add(actionPanel,BorderLayout.EAST);
         return header;
+    }
+    
+  
+    private JPanel createFilterPanel() {
+
+        JPanel panel =
+                new JPanel(
+                        new FlowLayout(
+                                FlowLayout.LEFT,
+                                10,
+                                0
+                        )
+                );
+
+        panel.setOpaque(false);
+
+        panel.setBorder(
+                BorderFactory.createEmptyBorder(
+                        0,
+                        0,
+                        16,
+                        0
+                )
+        );
+
+
+        // ---------- Search ----------
+        
+        searchField =
+            new PlaceholderTextField(
+                    "Search product or barcode...",
+                    22
+            );
+        
+        searchField.setToolTipText(
+                "Search by product name or barcode"
+        );
+
+
+        // ---------- Status filter ----------
+        statusFilter =
+                new JComboBox<>(
+                        new String[]{
+                            "Status: All",
+                            "Status: ACTIVE",
+                            "Status: INACTIVE"
+                        }
+                );
+
+        statusFilter.setPreferredSize(
+                new Dimension(
+                        145,
+                        32
+                )
+        );
+
+
+        // ---------- Sort field ----------
+        sortByCombo =
+                new JComboBox<>(
+                        new String[]{
+                            "Sort: ID",
+                            "Sort: Barcode",
+                            "Sort: Name",
+                            "Sort: Cost Price",
+                            "Sort: Selling Price",
+                            "Sort: Stock",
+                            "Sort: Status"
+                        }
+                );
+
+        sortByCombo.setPreferredSize(
+                new Dimension(
+                        150,
+                        32
+                )
+        );
+
+        sortByCombo.setToolTipText(
+                "Choose which product field to sort by"
+        );
+
+
+        // ---------- Sort direction ----------
+        sortOrderCombo =
+                new JComboBox<>(
+                        new String[]{
+                            "Ascending",
+                            "Descending"
+                        }
+                );
+
+        sortOrderCombo.setPreferredSize(
+                new Dimension(
+                        120,
+                        32
+                )
+        );
+
+        sortOrderCombo.setToolTipText(
+                "Choose ascending or descending order"
+        );
+
+
+        panel.add(searchField);
+        panel.add(statusFilter);
+        panel.add(sortByCombo);
+        panel.add(sortOrderCombo);
+
+
+        // ---------- Search listener ----------
+        searchField.getDocument()
+                .addDocumentListener(
+                        new javax.swing.event.DocumentListener() {
+
+            @Override
+            public void insertUpdate(
+                    javax.swing.event.DocumentEvent e
+            ) {
+                applyFilters();
+            }
+
+            @Override
+            public void removeUpdate(
+                    javax.swing.event.DocumentEvent e
+            ) {
+                applyFilters();
+            }
+
+            @Override
+            public void changedUpdate(
+                    javax.swing.event.DocumentEvent e
+            ) {
+                applyFilters();
+            }
+        });
+
+
+        statusFilter.addActionListener(
+                e -> applyFilters()
+        );
+
+
+        sortByCombo.addActionListener(
+                e -> applySorting()
+        );
+
+        sortOrderCombo.addActionListener(
+                e -> applySorting()
+        );
+
+
+        return panel;
     }
 
     private JPanel createTableSection() {
@@ -475,59 +525,90 @@ public class ProductsPanel extends JPanel {
             ) {
                 return false;
             }
+            
+            @Override
+            public Class<?> getColumnClass(
+                    int columnIndex
+            ) {
+
+                switch (columnIndex) {
+
+                    case 0: // ID
+                    case 6: // Reorder Level
+                        return Integer.class;
+
+                    default:
+                        return String.class;
+                }
+            }
         };
 
+
         productTable = new JTable(tableModel);
+        
+        tableSorter =
+                new TableRowSorter<>(
+                        tableModel
+                );
 
-        productTable.setRowHeight(42);
-        productTable.setFont(
-                new Font(
-                        "SansSerif",
-                        Font.PLAIN,
-                        13
-                )
+        productTable.setRowSorter(
+                tableSorter
         );
 
-        productTable.setForeground(TEXT_PRIMARY);
-        productTable.setBackground(Color.WHITE);
-
-        productTable.setGridColor(
-                new Color(240, 241, 243)
+        SuperMartTableStyle.apply(
+                productTable
+        );
+        
+        productTable.setSelectionMode(
+                ListSelectionModel.SINGLE_SELECTION
         );
 
-        productTable.setShowVerticalLines(false);
-        productTable.setShowHorizontalLines(true);
+        productTable
+                .getSelectionModel()
+                .addListSelectionListener(e -> {
 
-        productTable.setSelectionBackground(
-                new Color(239, 240, 243)
+                    if (!e.getValueIsAdjusting()) {
+                        updateProductActionButtons();
+                    }
+                });
+
+        productTable.setAutoResizeMode(
+                JTable.AUTO_RESIZE_ALL_COLUMNS
         );
 
-        productTable.setSelectionForeground(
-                TEXT_PRIMARY
-        );
+        productTable.getColumnModel()
+                .getColumn(0)
+                .setPreferredWidth(45);   // ID
 
-        JTableHeader tableHeader =
-                productTable.getTableHeader();
+        productTable.getColumnModel()
+                .getColumn(1)
+                .setPreferredWidth(100);  // Barcode
 
-        tableHeader.setFont(
-                new Font(
-                        "SansSerif",
-                        Font.BOLD,
-                        12
-                )
-        );
+        productTable.getColumnModel()
+                .getColumn(2)
+                .setPreferredWidth(190);  // Product
 
-        tableHeader.setForeground(TEXT_SECONDARY);
-        tableHeader.setBackground(
-                new Color(250, 250, 251)
-        );
+        productTable.getColumnModel()
+                .getColumn(3)
+                .setPreferredWidth(100);  // Cost
 
-        tableHeader.setPreferredSize(
-                new Dimension(
-                        tableHeader.getPreferredSize().width,
-                        42
-                )
-        );
+        productTable.getColumnModel()
+                .getColumn(4)
+                .setPreferredWidth(110);  // Selling
+
+        productTable.getColumnModel()
+                .getColumn(5)
+                .setPreferredWidth(90);   // Stock
+        
+        productTable.getColumnModel()
+                .getColumn(6)
+                .setPreferredWidth(100);  // Reorder
+               
+        productTable.getColumnModel()
+                .getColumn(7)
+                .setPreferredWidth(90);   // Status
+   
+        
 
         productTable.setFillsViewportHeight(true);
 
@@ -541,11 +622,376 @@ public class ProductsPanel extends JPanel {
         scrollPane.getViewport()
                 .setBackground(Color.WHITE);
 
+        card.add(
+                createFilterPanel(),
+                BorderLayout.NORTH
+        );
+        
+        
         card.add(scrollPane, BorderLayout.CENTER);
+        applySorting();
 
         return card;
     }
+ 
+    
+    
+    private void updateProductActionButtons() {
 
+        int selectedViewRow =
+                productTable.getSelectedRow();
+
+        boolean selected =
+                selectedViewRow >= 0;
+
+
+        editButton.setEnabled(selected);
+        statusButton.setEnabled(selected);
+
+
+        if (!selected) {
+
+            statusButton.setText(
+                    "Deactivate"
+            );
+
+            return;
+        }
+
+
+        int modelRow =
+                productTable
+                        .convertRowIndexToModel(
+                                selectedViewRow
+                        );
+
+
+        String status =
+                tableModel
+                        .getValueAt(
+                                modelRow,
+                                7
+                        )
+                        .toString();
+
+
+        if ("ACTIVE".equals(status)) {
+
+            statusButton.setText(
+                    "Deactivate"
+            );
+
+        } else {
+
+            statusButton.setText(
+                    "Activate"
+            );
+        }
+    }
+    
+    // ==========================================
+    // CHANGE PRODUCT STATUS
+    // ==========================================
+
+    private void changeSelectedProductStatus() {
+
+        int selectedViewRow =
+                productTable.getSelectedRow();
+
+
+        if (selectedViewRow < 0) {
+            return;
+        }
+
+
+        int modelRow =
+                productTable
+                        .convertRowIndexToModel(
+                                selectedViewRow
+                        );
+
+
+        int productId =
+                (Integer)
+                        tableModel
+                                .getValueAt(
+                                        modelRow,
+                                        0
+                                );
+
+
+        String productName =
+                tableModel
+                        .getValueAt(
+                                modelRow,
+                                2
+                        )
+                        .toString();
+
+
+        String currentStatus =
+                tableModel
+                        .getValueAt(
+                                modelRow,
+                                7
+                        )
+                        .toString();
+
+
+        boolean currentlyActive =
+                "ACTIVE".equals(
+                        currentStatus
+                );
+
+
+        String newStatus =
+                currentlyActive
+                        ? "INACTIVE"
+                        : "ACTIVE";
+
+
+        String action =
+                currentlyActive
+                        ? "deactivate"
+                        : "activate";
+
+
+        int choice =
+                JOptionPane.showConfirmDialog(
+                        this,
+                        "Are you sure you want to "
+                                + action
+                                + " \""
+                                + productName
+                                + "\"?",
+                        "Confirm Product Status",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE
+                );
+
+
+        if (choice
+                != JOptionPane.YES_OPTION) {
+
+            return;
+        }
+
+
+        try {
+
+            boolean updated =
+                    productDAO
+                            .updateProductStatus(
+                                    productId,
+                                    newStatus
+                            );
+
+
+            if (updated) {
+
+                loadProducts();
+
+            } else {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Product status could not be updated.",
+                        "Update Failed",
+                        JOptionPane.ERROR_MESSAGE
+                );
+            }
+
+
+        } catch (SQLException e) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Unable to update product status.\n"
+                            + e.getMessage(),
+                    "Database Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
+    }
+    
+    private void applySorting() {
+
+        if (tableSorter == null
+                || sortByCombo == null
+                || sortOrderCombo == null) {
+
+            return;
+        }
+
+
+        String selectedField =
+                (String)
+                        sortByCombo
+                                .getSelectedItem();
+
+        String selectedOrder =
+                (String)
+                        sortOrderCombo
+                                .getSelectedItem();
+
+
+        int columnIndex;
+
+        switch (selectedField) {
+
+            case "Sort: Barcode":
+                columnIndex = 1;
+                break;
+
+            case "Sort: Name":
+                columnIndex = 2;
+                break;
+
+            case "Sort: Cost Price":
+                columnIndex = 3;
+                break;
+
+            case "Sort: Selling Price":
+                columnIndex = 4;
+                break;
+
+            case "Sort: Stock":
+                columnIndex = 5;
+                break;
+
+            case "Sort: Status":
+                columnIndex = 7;
+                break;
+
+            case "Sort: ID":
+            default:
+                columnIndex = 0;
+                break;
+        }
+
+
+        SortOrder order;
+
+        if ("Descending".equals(
+                selectedOrder
+        )) {
+
+            order =
+                    SortOrder.DESCENDING;
+
+        } else {
+
+            order =
+                    SortOrder.ASCENDING;
+        }
+
+
+        tableSorter.setSortKeys(
+                java.util.List.of(
+                        new RowSorter.SortKey(
+                                columnIndex,
+                                order
+                        )
+                )
+        );
+
+        tableSorter.sort();
+    }
+
+    private void applyFilters() {
+
+        if (tableSorter == null
+                || searchField == null
+                || statusFilter == null) {
+
+            return;
+        }
+
+
+        String searchText =
+                searchField
+                        .getText()
+                        .trim();
+
+
+        String selectedStatus =
+                (String)
+                        statusFilter
+                                .getSelectedItem();
+
+
+        java.util.List<RowFilter<Object, Object>>
+                filters =
+                new java.util.ArrayList<>();
+
+
+        // Search Product + Barcode
+        if (!searchText.isEmpty()) {
+
+            filters.add(
+                    RowFilter.regexFilter(
+                            "(?i)"
+                                    + java.util.regex.Pattern
+                                            .quote(
+                                                    searchText
+                                            ),
+                            1,
+                            2
+                    )
+            );
+        }
+
+
+        // Status
+        if (selectedStatus != null
+                && !"Status: All".equals(
+                        selectedStatus
+                )) {
+
+            String status =
+                    selectedStatus.replace(
+                            "Status: ",
+                            ""
+                    );
+
+
+            filters.add(
+                    RowFilter.regexFilter(
+                            "^"
+                                    + java.util.regex.Pattern
+                                            .quote(status)
+                                    + "$",
+                            7
+                    )
+            );
+        }
+
+
+        if (filters.isEmpty()) {
+
+            tableSorter.setRowFilter(
+                    null
+            );
+
+        } else {
+
+            tableSorter.setRowFilter(
+                    RowFilter.andFilter(
+                            filters
+                    )
+            );
+        }
+    }
+
+    public void refreshPanel() {
+
+        loadProducts();
+
+        productTable.clearSelection();
+
+        updateProductActionButtons();
+    }
+    
     public final void loadProducts() {
 
         tableModel.setRowCount(0);
@@ -576,8 +1022,13 @@ public class ProductsPanel extends JPanel {
                                 product.getReorderLevel(),
                                 product.getStatus()
                         }
+                        
                 );
             }
+            
+            productTable.clearSelection();
+            updateProductActionButtons();
+            
 
         } catch (SQLException e) {
 

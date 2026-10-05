@@ -79,3 +79,75 @@ CREATE TABLE IF NOT EXISTS products (
     CONSTRAINT chk_product_reorder_level
         CHECK (reorder_level >= 0)
 );
+
+
+CREATE TABLE IF NOT EXISTS stock_transactions (
+    transaction_id INT AUTO_INCREMENT PRIMARY KEY,
+    product_id INT NOT NULL,
+    transaction_type ENUM(
+        'STOCK_IN',
+        'SALE',
+        'RETURN',
+        'DAMAGE',
+        'ADJUSTMENT'
+    ) NOT NULL,
+    quantity INT NOT NULL,
+    reference_note VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_stock_transaction_product
+        FOREIGN KEY (product_id)
+        REFERENCES products(product_id),
+
+    CONSTRAINT chk_stock_transaction_quantity
+        CHECK (quantity > 0)
+);
+
+
+CREATE TABLE IF NOT EXISTS customers (
+    customer_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(150) NOT NULL,
+    phone VARCHAR(20),
+    email VARCHAR(150),
+    address VARCHAR(255),
+    status ENUM('ACTIVE', 'INACTIVE')
+        NOT NULL DEFAULT 'ACTIVE',
+    created_at TIMESTAMP
+        DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT uq_customer_phone
+        UNIQUE (phone),
+
+    CONSTRAINT uq_customer_email
+        UNIQUE (email)
+);
+
+
+
+CREATE TABLE IF NOT EXISTS customers (
+    customer_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(150) NOT NULL,
+    phone VARCHAR(20),
+    email VARCHAR(150),
+    address VARCHAR(255),
+
+    status ENUM('ACTIVE', 'INACTIVE')
+        NOT NULL DEFAULT 'ACTIVE',
+
+    created_at TIMESTAMP
+        DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT uq_customer_phone
+        UNIQUE (phone),
+
+    CONSTRAINT uq_customer_email
+        UNIQUE (email)
+);
+
+
+USE supermart_db;
+
+ALTER TABLE suppliers
+ADD COLUMN status ENUM('ACTIVE', 'INACTIVE')
+NOT NULL DEFAULT 'ACTIVE'
+AFTER address;

@@ -11,9 +11,9 @@ package com.supermart.model;
 
 import java.time.LocalDateTime;
 
-public class Supplier {
+public class Customer {
 
-    private int supplierId;
+    private int customerId;
     private String name;
     private String phone;
     private String email;
@@ -21,19 +21,16 @@ public class Supplier {
     private String status;
     private LocalDateTime createdAt;
 
-
-    public Supplier() {
+    public Customer() {
     }
 
-
-    public int getSupplierId() {
-        return supplierId;
+    public int getCustomerId() {
+        return customerId;
     }
 
-    public void setSupplierId(int supplierId) {
-        this.supplierId = supplierId;
+    public void setCustomerId(int customerId) {
+        this.customerId = customerId;
     }
-
 
     public String getName() {
         return name;
@@ -43,7 +40,6 @@ public class Supplier {
         this.name = name;
     }
 
-
     public String getPhone() {
         return phone;
     }
@@ -51,7 +47,6 @@ public class Supplier {
     public void setPhone(String phone) {
         this.phone = phone;
     }
-
 
     public String getEmail() {
         return email;
@@ -61,7 +56,6 @@ public class Supplier {
         this.email = email;
     }
 
-
     public String getAddress() {
         return address;
     }
@@ -70,7 +64,6 @@ public class Supplier {
         this.address = address;
     }
 
-
     public String getStatus() {
         return status;
     }
@@ -78,7 +71,6 @@ public class Supplier {
     public void setStatus(String status) {
         this.status = status;
     }
-
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
@@ -89,7 +81,6 @@ public class Supplier {
     ) {
         this.createdAt = createdAt;
     }
-
 
     @Override
     public String toString() {
