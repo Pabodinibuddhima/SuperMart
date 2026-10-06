@@ -226,9 +226,14 @@ CREATE TABLE IF NOT EXISTS sale_items (
 
     unit_price DECIMAL(10,2)
         NOT NULL,
+    unit_cost DECIMAL(10,2) 
+        NOT NULL,
 
     line_total DECIMAL(10,2)
         NOT NULL,
+
+
+
 
     CONSTRAINT fk_sale_item_sale
         FOREIGN KEY (sale_id)

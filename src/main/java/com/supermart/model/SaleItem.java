@@ -19,20 +19,21 @@ public class SaleItem {
     private int quantity;
 
     private BigDecimal unitPrice;
+    private BigDecimal unitCost;
     private BigDecimal lineTotal;
 
 
     public SaleItem() {
     }
-
-
+    
     public SaleItem(
-            int saleItemId,
-            int saleId,
-            int productId,
-            int quantity,
-            BigDecimal unitPrice,
-            BigDecimal lineTotal
+        int saleItemId,
+        int saleId,
+        int productId,
+        int quantity,
+        BigDecimal unitPrice,
+        BigDecimal unitCost,
+        BigDecimal lineTotal
     ) {
 
         this.saleItemId = saleItemId;
@@ -40,6 +41,7 @@ public class SaleItem {
         this.productId = productId;
         this.quantity = quantity;
         this.unitPrice = unitPrice;
+        this.unitCost = unitCost;
         this.lineTotal = lineTotal;
     }
 
@@ -97,7 +99,14 @@ public class SaleItem {
     ) {
         this.unitPrice = unitPrice;
     }
+  
+    public BigDecimal getUnitCost() {
+        return unitCost;
+    }
 
+    public void setUnitCost(BigDecimal unitCost) {
+        this.unitCost = unitCost;
+    }
 
     public BigDecimal getLineTotal() {
         return lineTotal;

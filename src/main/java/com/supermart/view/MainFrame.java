@@ -36,6 +36,7 @@ public class MainFrame extends JFrame {
     private final CustomersPanel customersPanel;
     private final SuppliersPanel suppliersPanel;
     private final EmployeesPanel employeesPanel;
+    private final SalesPanel salesPanel;
     
     private JButton selectedNavigationButton;
     
@@ -84,6 +85,8 @@ public class MainFrame extends JFrame {
                 new SuppliersPanel();
         employeesPanel =
                 new EmployeesPanel();
+        salesPanel =
+                new SalesPanel();
 
 
         // ==========================================
@@ -93,6 +96,11 @@ public class MainFrame extends JFrame {
         contentPanel.add(
                 dashboardPanel,
                 "DASHBOARD"
+        );
+        
+        contentPanel.add(
+                salesPanel,
+                "SALES"
         );
 
         contentPanel.add(
@@ -212,6 +220,22 @@ public class MainFrame extends JFrame {
                     dashboardButton
             );
         });
+        
+        
+        salesButton.addActionListener(e -> {
+
+            salesPanel.refreshPanel();
+
+            cardLayout.show(
+                    contentPanel,
+                    "SALES"
+            );
+
+            selectNavigationButton(
+                    salesButton
+            );
+        });
+        
 
         inventoryButton.addActionListener(e -> {
 
