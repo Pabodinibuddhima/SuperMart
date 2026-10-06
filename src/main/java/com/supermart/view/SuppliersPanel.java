@@ -13,6 +13,7 @@ import com.supermart.dao.SupplierDAO;
 import com.supermart.model.Supplier;
 import com.supermart.view.component.PlaceholderTextField;
 import com.supermart.view.component.SuperMartTableStyle;
+import com.supermart.view.component.ResponsiveFlowPanel;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -98,10 +99,10 @@ public class SuppliersPanel extends JPanel {
 
         setBorder(
                 BorderFactory.createEmptyBorder(
-                        35,
-                        45,
-                        35,
-                        45
+                        38,//35
+                        42, //45
+                        38,
+                        42
                 )
         );
 
@@ -138,7 +139,7 @@ public class SuppliersPanel extends JPanel {
                 BorderFactory.createEmptyBorder(
                         0,
                         0,
-                        25,
+                        24,//25
                         0
                 )
         );
@@ -167,7 +168,7 @@ public class SuppliersPanel extends JPanel {
                 new Font(
                         "SansSerif",
                         Font.BOLD,
-                        28
+                        30 //28
                 )
         );
 
@@ -185,7 +186,7 @@ public class SuppliersPanel extends JPanel {
                 new Font(
                         "SansSerif",
                         Font.PLAIN,
-                        13
+                        14 //13
                 )
         );
 
@@ -232,7 +233,7 @@ public class SuppliersPanel extends JPanel {
 
         JButton addButton =
                 createPrimaryButton(
-                        "+ Add Supplier"
+                        "+  Add Supplier"
                 );
 
 
@@ -304,23 +305,14 @@ public class SuppliersPanel extends JPanel {
 
         return content;
     }
-
-
     // ==========================================
     // FILTER PANEL
     // ==========================================
 
     private JPanel createFilterPanel() {
-
         JPanel panel =
-                new JPanel(
-                        new FlowLayout(
-                                FlowLayout.LEFT,
-                                10,
-                                12
-                        )
-                );
-
+                new ResponsiveFlowPanel();
+        
         panel.setBackground(
                 Color.WHITE
         );
@@ -354,6 +346,13 @@ public class SuppliersPanel extends JPanel {
                             "INACTIVE"
                         }
                 );
+        
+        statusFilter.setPreferredSize(
+                new Dimension(
+                        145,
+                        32
+                )
+        );
 
 
         sortByCombo =
@@ -366,6 +365,13 @@ public class SuppliersPanel extends JPanel {
                             "Sort: Joined"
                         }
                 );
+                
+        sortByCombo.setPreferredSize(
+                new Dimension(
+                        150,
+                        32
+                )
+        );
 
 
         sortOrderCombo =
@@ -376,7 +382,13 @@ public class SuppliersPanel extends JPanel {
                         }
                 );
 
-
+        
+        sortOrderCombo.setPreferredSize(
+                new Dimension(
+                        120,
+                        32
+                )
+        );
         panel.add(searchField);
         panel.add(statusFilter);
         panel.add(sortByCombo);
@@ -623,12 +635,8 @@ public class SuppliersPanel extends JPanel {
                             supplier.getStatus(),
                             joined
                         }
-                );
-                
-                
+                );  
             }
-
-
             supplierTable.clearSelection();
             updateActionButtons();
 
@@ -1134,9 +1142,7 @@ public class SuppliersPanel extends JPanel {
         }
 
         return value;
-    }
-
-
+    } 
     private JButton createPrimaryButton(
             String text
     ) {
@@ -1162,24 +1168,21 @@ public class SuppliersPanel extends JPanel {
 
         button.setFocusPainted(false);
 
+        button.setBorder(
+                BorderFactory.createEmptyBorder(
+                        11, 18, 11, 18
+                )
+        );
+
         button.setCursor(
                 Cursor.getPredefinedCursor(
                         Cursor.HAND_CURSOR
                 )
         );
 
-        button.setPreferredSize(
-                new Dimension(
-                        130,
-                        38
-                )
-        );
-
-
         return button;
     }
-
-
+    
     private JButton createSecondaryButton(
             String text
     ) {
@@ -1202,14 +1205,6 @@ public class SuppliersPanel extends JPanel {
                         Cursor.HAND_CURSOR
                 )
         );
-
-        button.setPreferredSize(
-                new Dimension(
-                        105,
-                        38
-                )
-        );
-
 
         return button;
     }

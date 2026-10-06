@@ -32,9 +32,12 @@ CREATE TABLE IF NOT EXISTS suppliers (
     phone VARCHAR(20),
     email VARCHAR(150),
     address VARCHAR(255),
+
+    status ENUM('ACTIVE', 'INACTIVE')
+        NOT NULL DEFAULT 'ACTIVE',
+
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
 
 -- =====================================================
 -- PRODUCTS
@@ -80,6 +83,10 @@ CREATE TABLE IF NOT EXISTS products (
         CHECK (reorder_level >= 0)
 );
 
+-- =====================================================
+-- STOCK_TRANSACTIONS
+-- =====================================================
+
 
 CREATE TABLE IF NOT EXISTS stock_transactions (
     transaction_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -103,6 +110,10 @@ CREATE TABLE IF NOT EXISTS stock_transactions (
         CHECK (quantity > 0)
 );
 
+-- =====================================================
+-- CUSTOMERS
+-- =====================================================
+
 
 CREATE TABLE IF NOT EXISTS customers (
     customer_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -122,32 +133,146 @@ CREATE TABLE IF NOT EXISTS customers (
         UNIQUE (email)
 );
 
+-- =====================================================
+-- EMPLOYEES
+-- =====================================================
 
-
-CREATE TABLE IF NOT EXISTS customers (
-    customer_id INT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS employees (
+    employee_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(150) NOT NULL,
     phone VARCHAR(20),
     email VARCHAR(150),
-    address VARCHAR(255),
 
-    status ENUM('ACTIVE', 'INACTIVE')
-        NOT NULL DEFAULT 'ACTIVE',
+    role ENUM(
+        'MANAGER',
+        'CASHIER',
+        'STOCK_CLERK'
+    ) NOT NULL,
+
+    status ENUM(
+        'ACTIVE',
+        'INACTIVE'
+    ) NOT NULL DEFAULT 'ACTIVE',
 
     created_at TIMESTAMP
         DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT uq_customer_phone
-        UNIQUE (phone),
-
-    CONSTRAINT uq_customer_email
+    CONSTRAINT uq_employee_email
         UNIQUE (email)
 );
 
 
-USE supermart_db;
+-- =====================================================
+-- SALES
+-- =====================================================
 
-ALTER TABLE suppliers
-ADD COLUMN status ENUM('ACTIVE', 'INACTIVE')
-NOT NULL DEFAULT 'ACTIVE'
-AFTER address;
+CREATE TABLE IF NOT EXISTS sales (
+    sale_id INT AUTO_INCREMENT PRIMARY KEY,
+
+    invoice_number VARCHAR(50)
+        NOT NULL UNIQUE,
+
+    customer_id INT,
+    employee_id INT,
+
+    subtotal DECIMAL(10,2)
+        NOT NULL,
+
+    discount DECIMAL(10,2)
+        NOT NULL DEFAULT 0.00,
+
+    total_amount DECIMAL(10,2)
+        NOT NULL,
+
+    status ENUM(
+        'COMPLETED',
+        'REFUNDED',
+        'PARTIALLY_REFUNDED'
+    ) NOT NULL DEFAULT 'COMPLETED',
+
+    created_at TIMESTAMP
+        DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_sale_customer
+        FOREIGN KEY (customer_id)
+        REFERENCES customers(customer_id),
+
+    CONSTRAINT fk_sale_employee
+        FOREIGN KEY (employee_id)
+        REFERENCES employees(employee_id),
+
+    CONSTRAINT chk_sale_subtotal
+        CHECK (subtotal >= 0),
+
+    CONSTRAINT chk_sale_discount
+        CHECK (discount >= 0),
+
+    CONSTRAINT chk_sale_total
+        CHECK (total_amount >= 0)
+);
+
+
+-- =====================================================
+-- SALE ITEMS
+-- =====================================================
+
+CREATE TABLE IF NOT EXISTS sale_items (
+    sale_item_id INT AUTO_INCREMENT PRIMARY KEY,
+
+    sale_id INT NOT NULL,
+    product_id INT NOT NULL,
+
+    quantity INT NOT NULL,
+
+    unit_price DECIMAL(10,2)
+        NOT NULL,
+
+    line_total DECIMAL(10,2)
+        NOT NULL,
+
+    CONSTRAINT fk_sale_item_sale
+        FOREIGN KEY (sale_id)
+        REFERENCES sales(sale_id),
+
+    CONSTRAINT fk_sale_item_product
+        FOREIGN KEY (product_id)
+        REFERENCES products(product_id),
+
+    CONSTRAINT chk_sale_item_quantity
+        CHECK (quantity > 0),
+
+    CONSTRAINT chk_sale_item_unit_price
+        CHECK (unit_price >= 0),
+
+    CONSTRAINT chk_sale_item_line_total
+        CHECK (line_total >= 0)
+);
+
+
+-- =====================================================
+-- PAYMENTS
+-- =====================================================
+
+CREATE TABLE IF NOT EXISTS payments (
+    payment_id INT AUTO_INCREMENT PRIMARY KEY,
+
+    sale_id INT NOT NULL,
+
+    payment_method ENUM(
+        'CASH',
+        'CARD'
+    ) NOT NULL,
+
+    amount DECIMAL(10,2)
+        NOT NULL,
+
+    created_at TIMESTAMP
+        DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_payment_sale
+        FOREIGN KEY (sale_id)
+        REFERENCES sales(sale_id),
+
+    CONSTRAINT chk_payment_amount
+        CHECK (amount >= 0)
+);

@@ -151,7 +151,7 @@ public class InventoryPanel extends JPanel {
 
 
         JButton stockEntryButton =
-                new JButton("+  Stock Entry");
+                new JButton("+ Stock Entry");
 
         stockEntryButton.setFont(
                 new Font(
@@ -205,14 +205,27 @@ public class InventoryPanel extends JPanel {
                 BorderLayout.WEST
         );
 
+        JPanel actionPanel =
+                new JPanel(
+                        new FlowLayout(
+                                FlowLayout.RIGHT,
+                                0,
+                                0
+                        )
+                );
+
+        actionPanel.setOpaque(false);
+
+        actionPanel.add(stockEntryButton);
+
         header.add(
-                stockEntryButton,
+                actionPanel,
                 BorderLayout.EAST
         );
 
         return header;
         }
-    
+        
     private void styleTabButton(
             JButton button,
             boolean selected
@@ -1016,8 +1029,6 @@ public class InventoryPanel extends JPanel {
             historyTable.clearSelection();
         }
     }
-
-    
 
     public final void loadInventory() {
 

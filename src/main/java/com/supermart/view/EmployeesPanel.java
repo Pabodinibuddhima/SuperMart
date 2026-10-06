@@ -10,8 +10,8 @@ package com.supermart.view;
  */
 
 import com.supermart.view.component.SuperMartTableStyle;
-import com.supermart.dao.CustomerDAO;
-import com.supermart.model.Customer;
+import com.supermart.dao.EmployeeDAO;
+import com.supermart.model.Employee;
 import com.supermart.view.component.PlaceholderTextField;
 import com.supermart.view.component.ResponsiveFlowPanel;
 
@@ -45,7 +45,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 
 
-public class CustomersPanel extends JPanel {
+public class EmployeesPanel extends JPanel {
 
     private static final Color BACKGROUND =
             new Color(247, 248, 250);
@@ -66,13 +66,12 @@ public class CustomersPanel extends JPanel {
             new Color(25, 25, 28);
 
 
-    private final CustomerDAO customerDAO;
-
-    private JTable customerTable;
+    private final EmployeeDAO employeeDAO;
+    private JTable employeeTable;
     private DefaultTableModel tableModel;
     private TableRowSorter<DefaultTableModel> tableSorter;
 
-    private JScrollPane customerScrollPane;
+    private JScrollPane employeeScrollPane;
     private JLabel emptyStateLabel;
     
     private JButton editButton;
@@ -80,14 +79,15 @@ public class CustomersPanel extends JPanel {
 
     private PlaceholderTextField searchField;
     private JComboBox<String> statusFilter;
+    private JComboBox<String> roleFilter;
     
     private JComboBox<String> sortByCombo;
     private JComboBox<String> sortOrderCombo;
 
 
-    public CustomersPanel() {
+    public EmployeesPanel() {
 
-        customerDAO = new CustomerDAO();
+        employeeDAO = new EmployeeDAO();
 
         setLayout(new BorderLayout());
         setBackground(BACKGROUND);
@@ -118,14 +118,14 @@ public class CustomersPanel extends JPanel {
                 Box.createVerticalStrut(24)
         );
         
-        content.add(createCustomerContent());
+        content.add(createEmployeeContent());
         add(
                 content,
                 BorderLayout.CENTER
         );
 
 
-        loadCustomers();
+        loadEmployees();
     }
 
 
@@ -164,7 +164,7 @@ public class CustomersPanel extends JPanel {
 
 
         JLabel title =
-                new JLabel("Customers");
+                new JLabel("Employees");
 
         title.setFont(
                 new Font(
@@ -181,7 +181,7 @@ public class CustomersPanel extends JPanel {
 
         JLabel subtitle =
                 new JLabel(
-                        "Manage customer information and account status."
+                        "Manage staff information and account status."
                 );
 
         subtitle.setFont(
@@ -208,7 +208,7 @@ public class CustomersPanel extends JPanel {
 
         JButton addButton =
                 new JButton(
-                        "+ Add Customer"
+                        "+ Add Employee"
                 );
 
         addButton.setFont(
@@ -236,26 +236,25 @@ public class CustomersPanel extends JPanel {
                         11, 18, 11, 18
                 )
         );
-
         
         addButton.addActionListener(e -> {
 
-            AddCustomerDialog dialog =
-                    new AddCustomerDialog(
+            AddEmployeeDialog dialog =
+                    new AddEmployeeDialog(
                             javax.swing.SwingUtilities
                                     .getWindowAncestor(this)
                     );
-
+        
             dialog.setVisible(true);
 
 
-            if (dialog.isCustomerSaved()) {
+            if (dialog.isEmployeeSaved()) {
 
-                loadCustomers();
+                loadEmployees();
             }
         });
 
-        // ---------- Customer actions ----------
+        // ---------- Employee actions ----------
 
         editButton =
                 new JButton(
@@ -271,7 +270,7 @@ public class CustomersPanel extends JPanel {
         );
 
         editButton.setToolTipText(
-                "Edit the selected customer"
+                "Edit the selected employee"
         );
 
 
@@ -289,16 +288,16 @@ public class CustomersPanel extends JPanel {
         );
 
         statusButton.setToolTipText(
-                "Activate or deactivate the selected customer"
+                "Activate or deactivate the selected employee"
         );
 
 
         editButton.addActionListener(
-                e -> editSelectedCustomer()
+                e -> editSelectedEmployee()
         );
 
         statusButton.addActionListener(
-                e -> changeSelectedCustomerStatus()
+                e -> changeSelectedEmployeeStatus()
         );
 
 
@@ -348,9 +347,8 @@ public class CustomersPanel extends JPanel {
     // ==========================================
 
     private JPanel createFilterPanel() {
-        
         JPanel panel =
-                new ResponsiveFlowPanel();
+            new ResponsiveFlowPanel();
 
         panel.setOpaque(false);
         
@@ -359,6 +357,16 @@ public class CustomersPanel extends JPanel {
                         12, 12, 12, 12
                 )
         );
+        
+        panel.setMaximumSize(
+                new Dimension(
+                        Integer.MAX_VALUE,
+                        56
+                )
+        );
+        
+
+
         searchField =
                 new PlaceholderTextField(
                         "Search name, phone or email...",
@@ -366,7 +374,7 @@ public class CustomersPanel extends JPanel {
                 );
 
         searchField.setToolTipText(
-                "Search customers by name, phone number or email address"
+                "Search employees by name, phone number or email address"
         );
 
         statusFilter =
@@ -384,6 +392,30 @@ public class CustomersPanel extends JPanel {
                         32
                 )
         );
+        
+        
+        roleFilter =
+                new JComboBox<>(
+                        new String[]{
+                            "Role: All",
+                            "MANAGER",
+                            "CASHIER",
+                            "STOCK_CLERK"
+                        }
+                );
+
+        roleFilter.setPreferredSize(
+                new Dimension(
+                        150,
+                        32
+                )
+        );
+
+        roleFilter.setToolTipText(
+                "Filter employees by role"
+        );
+
+        
         
        sortByCombo =
                 new JComboBox<>(
@@ -404,7 +436,7 @@ public class CustomersPanel extends JPanel {
         );
 
         sortByCombo.setToolTipText(
-                "Choose which customer field to sort by"
+                "Choose which employee field to sort by"
         );
 
 
@@ -429,6 +461,7 @@ public class CustomersPanel extends JPanel {
 
         panel.add(searchField);
         panel.add(statusFilter);
+        panel.add(roleFilter);
         panel.add(sortByCombo);
         panel.add(sortOrderCombo);
 
@@ -464,6 +497,10 @@ public class CustomersPanel extends JPanel {
         statusFilter.addActionListener(
                 e -> applyFilters()
         );
+        
+        roleFilter.addActionListener(
+                e -> applyFilters()
+        );
 
         
         
@@ -475,11 +512,9 @@ public class CustomersPanel extends JPanel {
                 e -> applySorting()
         );
 
-
         return panel;
     }
-
-    private JPanel createCustomerContent() {
+    private JPanel createEmployeeContent() {
 
         JPanel content =
                 new JPanel(
@@ -537,7 +572,7 @@ public class CustomersPanel extends JPanel {
             "Name",
             "Phone",
             "Email",
-            "Address",
+            "Role",
             "Status",
             "Joined"
         };
@@ -572,24 +607,24 @@ public class CustomersPanel extends JPanel {
 
         };
          
-        customerTable =
+        employeeTable =
                 new JTable(
                         tableModel
                 );
         
         SuperMartTableStyle.apply(
-                customerTable
+                employeeTable
         );
 
 
-        customerTable.setSelectionMode(
+        employeeTable.setSelectionMode(
                 ListSelectionModel
                         .SINGLE_SELECTION
         );
         
         
         
-        customerTable
+        employeeTable
                 .getSelectionModel()
                 .addListSelectionListener(e -> {
 
@@ -599,7 +634,7 @@ public class CustomersPanel extends JPanel {
             }
         });
  
-        customerTable.setShowVerticalLines(
+        employeeTable.setShowVerticalLines(
                 false
         );
 
@@ -612,7 +647,7 @@ public class CustomersPanel extends JPanel {
                         tableModel
                 );
 
-        customerTable.setRowSorter(
+        employeeTable.setRowSorter(
                 tableSorter
         );
 
@@ -622,12 +657,12 @@ public class CustomersPanel extends JPanel {
         // Scroll pane
         // ------------------------------------------
 
-        customerScrollPane =
+        employeeScrollPane =
                 new JScrollPane(
-                        customerTable
+                        employeeTable
                 );
 
-        customerScrollPane.setBorder(
+        employeeScrollPane.setBorder(
                 BorderFactory.createEmptyBorder()
         );
 
@@ -638,7 +673,7 @@ public class CustomersPanel extends JPanel {
 
         emptyStateLabel =
                 new JLabel(
-                        "No customer records yet.",
+                        "No employee records yet.",
                         JLabel.CENTER
                 );
 
@@ -664,7 +699,7 @@ public class CustomersPanel extends JPanel {
 
 
         card.add(
-                customerScrollPane,
+                employeeScrollPane,
                 BorderLayout.CENTER
         );
 
@@ -679,7 +714,7 @@ public class CustomersPanel extends JPanel {
     private void updateActionButtons() {
 
         int selectedViewRow =
-                customerTable
+                employeeTable
                         .getSelectedRow();
 
 
@@ -707,7 +742,7 @@ public class CustomersPanel extends JPanel {
 
 
         int modelRow =
-                customerTable
+                employeeTable
                         .convertRowIndexToModel(
                                 selectedViewRow
                         );
@@ -737,13 +772,13 @@ public class CustomersPanel extends JPanel {
     }
 
     // ==========================================
-    // GET SELECTED CUSTOMER
+    // GET SELECTED EMPLOYEE
     // ==========================================
 
-    private Customer getSelectedCustomer() {
+    private Employee getSelectedEmployee() {
 
         int selectedViewRow =
-                customerTable
+                employeeTable
                         .getSelectedRow();
 
 
@@ -753,13 +788,13 @@ public class CustomersPanel extends JPanel {
 
 
         int modelRow =
-                customerTable
+                employeeTable
                         .convertRowIndexToModel(
                                 selectedViewRow
                         );
 
 
-        int customerId =
+        int employeeId =
                 (Integer)
                         tableModel
                                 .getValueAt(
@@ -770,18 +805,18 @@ public class CustomersPanel extends JPanel {
 
         try {
 
-            List<Customer> customers =
-                    customerDAO
-                            .getAllCustomers();
+            List<Employee> employees =
+                    employeeDAO
+                            .getAllEmployees();
 
 
-            for (Customer customer
-                    : customers) {
+            for (Employee employee
+                    : employees) {
 
-                if (customer.getCustomerId()
-                        == customerId) {
+                if (employee.getEmployeeId()
+                        == employeeId) {
 
-                    return customer;
+                    return employee;
                 }
             }
 
@@ -790,7 +825,7 @@ public class CustomersPanel extends JPanel {
 
             JOptionPane.showMessageDialog(
                     this,
-                    "Unable to load customer.\n"
+                    "Unable to load employee.\n"
                             + e.getMessage(),
                     "Database Error",
                     JOptionPane.ERROR_MESSAGE
@@ -802,56 +837,56 @@ public class CustomersPanel extends JPanel {
     }
 
     // ==========================================
-    // EDIT CUSTOMER
+    // EDIT EMPLOYEE
     // ==========================================
 
-    private void editSelectedCustomer() {
+    private void editSelectedEmployee() {
 
-        Customer customer =
-                getSelectedCustomer();
+        Employee employee =
+                getSelectedEmployee();
 
 
-        if (customer == null) {
+        if (employee == null) {
             return;
         }
 
-
-        AddCustomerDialog dialog =
-                new AddCustomerDialog(
+        
+        AddEmployeeDialog dialog =
+                new AddEmployeeDialog(
                         javax.swing.SwingUtilities
                                 .getWindowAncestor(this),
-                        customer
+                        employee
                 );
 
-
+        
         dialog.setVisible(true);
 
 
-        if (dialog.isCustomerSaved()) {
+        if (dialog.isEmployeeSaved()) {
 
-            loadCustomers();
+            loadEmployees();
         }
     }
     
     
     // ==========================================
-    // CHANGE CUSTOMER STATUS
+    // CHANGE EMPLOYEE STATUS
     // ==========================================
 
-    private void changeSelectedCustomerStatus() {
+    private void changeSelectedEmployeeStatus() {
 
-        Customer customer =
-                getSelectedCustomer();
+        Employee employee =
+                getSelectedEmployee();
 
 
-        if (customer == null) {
+        if (employee == null) {
             return;
         }
 
 
         boolean currentlyActive =
                 "ACTIVE".equals(
-                        customer.getStatus()
+                        employee.getStatus()
                 );
 
 
@@ -873,9 +908,9 @@ public class CustomersPanel extends JPanel {
                         "Are you sure you want to "
                                 + action
                                 + " "
-                                + customer.getName()
+                                + employee.getName()
                                 + "?",
-                        "Confirm Customer Status",
+                        "Confirm Employee Status",
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.QUESTION_MESSAGE
                 );
@@ -891,22 +926,22 @@ public class CustomersPanel extends JPanel {
         try {
 
             boolean updated =
-                    customerDAO
-                            .updateCustomerStatus(
-                                    customer.getCustomerId(),
+                    employeeDAO
+                            .updateEmployeeStatus(
+                                    employee.getEmployeeId(),
                                     newStatus
                             );
 
 
             if (updated) {
 
-                loadCustomers();
+                loadEmployees();
 
             } else {
 
                 JOptionPane.showMessageDialog(
                         this,
-                        "Customer status could not be updated.",
+                        "Employee status could not be updated.",
                         "Update Failed",
                         JOptionPane.ERROR_MESSAGE
                 );
@@ -917,7 +952,7 @@ public class CustomersPanel extends JPanel {
 
             JOptionPane.showMessageDialog(
                     this,
-                    "Unable to update customer status.\n"
+                    "Unable to update employee status.\n"
                             + e.getMessage(),
                     "Database Error",
                     JOptionPane.ERROR_MESSAGE
@@ -925,29 +960,26 @@ public class CustomersPanel extends JPanel {
         }
     }
 
-    
-    
-    
     public void refreshPanel() {
 
-        loadCustomers();
+        loadEmployees();
 
-        customerTable.clearSelection();
+        employeeTable.clearSelection();
 
         updateActionButtons();
     }
 
     // ==========================================
-    // LOAD CUSTOMERS
+    // LOAD EMPLOYEES
     // ==========================================
 
-    public final void loadCustomers() {
+    public final void loadEmployees() {
 
         try {
 
-            List<Customer> customers =
-                    customerDAO
-                            .getAllCustomers();
+            List<Employee> employees =
+                    employeeDAO
+                            .getAllEmployees();
 
 
             tableModel.setRowCount(0);
@@ -959,16 +991,16 @@ public class CustomersPanel extends JPanel {
                     );
 
 
-            for (Customer customer
-                    : customers) {
+            for (Employee employee
+                    : employees) {
 
                 String joined = "";
 
-                if (customer.getCreatedAt()
+                if (employee.getCreatedAt()
                         != null) {
 
                     joined =
-                            customer
+                            employee
                                     .getCreatedAt()
                                     .format(formatter);
                 }
@@ -976,22 +1008,22 @@ public class CustomersPanel extends JPanel {
 
                 tableModel.addRow(
                         new Object[]{
-                            customer.getCustomerId(),
-                            customer.getName(),
+                            employee.getEmployeeId(),
+                            employee.getName(),
 
                             displayValue(
-                                    customer.getPhone()
+                                    employee.getPhone()
                             ),
 
                             displayValue(
-                                    customer.getEmail()
+                                    employee.getEmail()
                             ),
 
                             displayValue(
-                                    customer.getAddress()
+                                    employee.getRole()
                             ),
 
-                            customer.getStatus(),
+                            employee.getStatus(),
                             joined
                         }
                 );
@@ -1006,7 +1038,7 @@ public class CustomersPanel extends JPanel {
 
             JOptionPane.showMessageDialog(
                     this,
-                    "Unable to load customers.\n"
+                    "Unable to load employees.\n"
                             + e.getMessage(),
                     "Database Error",
                     JOptionPane.ERROR_MESSAGE
@@ -1188,14 +1220,14 @@ public class CustomersPanel extends JPanel {
 
         if (tableModel.getRowCount() == 0) {
 
-            customerScrollPane.setViewportView(
+            employeeScrollPane.setViewportView(
                     emptyStateLabel
             );
 
         } else {
 
-            customerScrollPane.setViewportView(
-                    customerTable
+            employeeScrollPane.setViewportView(
+                    employeeTable
             );
         }
     }

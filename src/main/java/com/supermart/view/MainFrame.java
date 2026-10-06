@@ -35,6 +35,7 @@ public class MainFrame extends JFrame {
     private final InventoryPanel inventoryPanel;
     private final CustomersPanel customersPanel;
     private final SuppliersPanel suppliersPanel;
+    private final EmployeesPanel employeesPanel;
     
     private JButton selectedNavigationButton;
     
@@ -45,7 +46,14 @@ public class MainFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         setMinimumSize(new Dimension(1050, 650));
-        setSize(1280, 760);
+        setSize(1280, 760); 
+        setMinimumSize(
+                new Dimension(
+                        1050, //900
+                        650
+                )
+        );
+        
         setLocationRelativeTo(null);
 
         setLayout(new BorderLayout());
@@ -74,6 +82,8 @@ public class MainFrame extends JFrame {
         
         suppliersPanel =
                 new SuppliersPanel();
+        employeesPanel =
+                new EmployeesPanel();
 
 
         // ==========================================
@@ -104,6 +114,11 @@ public class MainFrame extends JFrame {
         contentPanel.add(
                 suppliersPanel,
                 "SUPPLIERS"
+        );
+        
+        contentPanel.add(
+                employeesPanel,
+                "EMPLOYEES"
         );
   
         // Sidebar
@@ -253,6 +268,22 @@ public class MainFrame extends JFrame {
                     suppliersButton
             );
         });
+        
+        employeesButton.addActionListener(e -> {
+
+            employeesPanel.refreshPanel();
+
+            cardLayout.show(
+                    contentPanel,
+                    "EMPLOYEES"
+            );
+
+            selectNavigationButton(
+                    employeesButton
+            );
+        });
+        
+        
 
 
         sidebar.add(dashboardButton);

@@ -8,6 +8,7 @@ import com.supermart.dao.ProductDAO;
 import com.supermart.model.Product;
 import com.supermart.view.component.SuperMartTableStyle;
 import com.supermart.view.component.PlaceholderTextField;
+import com.supermart.view.component.ResponsiveFlowPanel;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -21,9 +22,6 @@ import java.util.List;
  *
  * @author pabodini
  */
-
-
-
 public class ProductsPanel extends JPanel {
 
     private static final Color BACKGROUND =
@@ -205,7 +203,7 @@ public class ProductsPanel extends JPanel {
         );
         
         editButton =
-        new JButton("Edit Product");
+        new JButton("Edit");
         
         editButton.setEnabled(false);
 
@@ -216,10 +214,6 @@ public class ProductsPanel extends JPanel {
                         13
                 )
         );
-        
-        
-        
-
         editButton.setFocusPainted(false);
 
         editButton.setCursor(
@@ -325,35 +319,28 @@ public class ProductsPanel extends JPanel {
         actionPanel.setOpaque(false);
         
         
-        actionPanel.add(statusButton);
         actionPanel.add(editButton);
+        actionPanel.add(statusButton);
         actionPanel.add(addProductButton);
 
         header.add(titlePanel, BorderLayout.WEST);
         header.add(actionPanel,BorderLayout.EAST);
         return header;
     }
-    
-  
-    private JPanel createFilterPanel() {
 
-        JPanel panel =
-                new JPanel(
-                        new FlowLayout(
-                                FlowLayout.LEFT,
-                                10,
-                                0
-                        )
-                );
+    private JPanel createFilterPanel() {
+        JPanel panel = 
+                new ResponsiveFlowPanel();
+        
 
         panel.setOpaque(false);
 
         panel.setBorder(
                 BorderFactory.createEmptyBorder(
-                        0,
-                        0,
-                        16,
-                        0
+                        0, //12
+                        0, //12
+                        16, // 12
+                        0 //12
                 )
         );
 
@@ -633,9 +620,7 @@ public class ProductsPanel extends JPanel {
 
         return card;
     }
- 
-    
-    
+
     private void updateProductActionButtons() {
 
         int selectedViewRow =
