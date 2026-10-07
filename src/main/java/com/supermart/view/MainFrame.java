@@ -37,7 +37,7 @@ public class MainFrame extends JFrame {
     private final SuppliersPanel suppliersPanel;
     private final EmployeesPanel employeesPanel;
     private final SalesPanel salesPanel;
-    
+    private final ReportsPanel reportsPanel;
     private JButton selectedNavigationButton;
     
 
@@ -87,7 +87,8 @@ public class MainFrame extends JFrame {
                 new EmployeesPanel();
         salesPanel =
                 new SalesPanel();
-
+        reportsPanel =
+            new ReportsPanel();
 
         // ==========================================
         // REGISTER PANELS WITH CARDLAYOUT
@@ -128,7 +129,12 @@ public class MainFrame extends JFrame {
                 employeesPanel,
                 "EMPLOYEES"
         );
-  
+        
+        contentPanel.add(
+                reportsPanel,
+                "REPORTS"
+        );
+
         // Sidebar
         add(createSidebar(), BorderLayout.WEST);
 
@@ -307,6 +313,18 @@ public class MainFrame extends JFrame {
             );
         });
         
+        
+        reportsButton.addActionListener(e -> {
+
+            cardLayout.show(
+                    contentPanel,
+                    "REPORTS"
+            );
+
+            selectNavigationButton(
+                    reportsButton
+            );
+        });
         
 
 
