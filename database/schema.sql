@@ -281,3 +281,50 @@ CREATE TABLE IF NOT EXISTS payments (
     CONSTRAINT chk_payment_amount
         CHECK (amount >= 0)
 );
+
+-- =====================================================
+-- RETURNS
+-- =====================================================
+
+CREATE TABLE IF NOT EXISTS returns (
+    return_id INT AUTO_INCREMENT PRIMARY KEY,
+    sale_id INT NOT NULL,
+    employee_id INT,
+    refund_amount DECIMAL(10,2) NOT NULL,
+    reason VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_return_sale
+        FOREIGN KEY (sale_id)
+        REFERENCES sales(sale_id),
+
+    CONSTRAINT fk_return_employee
+        FOREIGN KEY (employee_id)
+        REFERENCES employees(employee_id),
+
+    CONSTRAINT chk_refund_amount
+        CHECK (refund_amount >= 0)
+);
+
+
+CREATE TABLE IF NOT EXISTS return_items (
+    return_item_id INT AUTO_INCREMENT PRIMARY KEY,
+    return_id INT NOT NULL,
+    sale_item_id INT NOT NULL,
+    quantity INT NOT NULL,
+    refund_amount DECIMAL(10,2) NOT NULL,
+
+    CONSTRAINT fk_return_item_return
+        FOREIGN KEY (return_id)
+        REFERENCES returns(return_id),
+
+    CONSTRAINT fk_return_item_sale_item
+        FOREIGN KEY (sale_item_id)
+        REFERENCES sale_items(sale_item_id),
+
+    CONSTRAINT chk_return_quantity
+        CHECK (quantity > 0),
+
+    CONSTRAINT chk_return_item_refund
+        CHECK (refund_amount >= 0)
+);

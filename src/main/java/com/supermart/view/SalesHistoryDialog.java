@@ -73,8 +73,8 @@ public class SalesHistoryDialog extends JDialog {
     private TableRowSorter<DefaultTableModel> tableSorter;
 
     private JButton viewSaleButton;
-
-
+    private JButton returnRefundButton;
+    
     public SalesHistoryDialog(
             Frame parent
     ) {
@@ -366,18 +366,43 @@ public class SalesHistoryDialog extends JDialog {
                 BorderLayout.CENTER
         );
 
-
         JPanel bottom =
                 new JPanel(
                         new FlowLayout(
                                 FlowLayout.RIGHT,
-                                0,
+                                10,
                                 0
                         )
                 );
 
         bottom.setOpaque(false);
 
+
+        // ------------------------------------------
+        // RETURN / REFUND
+        // ------------------------------------------
+
+        returnRefundButton =
+                new JButton(
+                        "Return / Refund"
+                );
+
+        returnRefundButton.setEnabled(
+                false
+        );
+
+        returnRefundButton.setFocusPainted(
+                false
+        );
+
+        returnRefundButton.addActionListener(
+                e -> returnSelectedSale()
+        );
+
+
+        // ------------------------------------------
+        // VIEW SALE
+        // ------------------------------------------
 
         viewSaleButton =
                 new JButton(
@@ -388,25 +413,32 @@ public class SalesHistoryDialog extends JDialog {
                 false
         );
 
-        /*
-         * We will connect the detailed receipt
-         * in the next checkpoint.
-         */
+        viewSaleButton.setFocusPainted(
+                false
+        );
+
         viewSaleButton.addActionListener(
                 e -> viewSelectedSale()
         );
 
 
+        // ------------------------------------------
+        // ADD BUTTONS
+        // ------------------------------------------
+
+        bottom.add(
+                returnRefundButton
+        );
+
         bottom.add(
                 viewSaleButton
         );
-
 
         card.add(
                 bottom,
                 BorderLayout.SOUTH
         );
-
+        
 
         return card;
     }
@@ -691,19 +723,140 @@ public class SalesHistoryDialog extends JDialog {
         }
     }
 
-
     private void updateViewButton() {
 
-        if (viewSaleButton == null) {
+        if (viewSaleButton == null
+                || returnRefundButton == null) {
             return;
         }
 
+
+        int viewRow =
+                salesTable.getSelectedRow();
+
+
+        boolean hasSelection =
+                viewRow >= 0;
+
+
         viewSaleButton.setEnabled(
-                salesTable.getSelectedRow()
-                >= 0
+                hasSelection
+        );
+
+
+        if (!hasSelection) {
+
+            returnRefundButton.setEnabled(
+                    false
+            );
+
+            return;
+        }
+
+
+        int modelRow =
+                salesTable.convertRowIndexToModel(
+                        viewRow
+                );
+
+
+        String status =
+                String.valueOf(
+                        tableModel.getValueAt(
+                                modelRow,
+                                7
+                        )
+                );
+
+
+        boolean canReturn =
+                "COMPLETED".equals(status)
+                || "PARTIALLY_REFUNDED".equals(status);
+
+
+        returnRefundButton.setEnabled(
+                canReturn
         );
     }
-    
+
+    private void returnSelectedSale() {
+
+        int viewRow =
+                salesTable.getSelectedRow();
+
+        if (viewRow < 0) {
+            return;
+        }
+
+
+        int modelRow =
+                salesTable.convertRowIndexToModel(
+                        viewRow
+                );
+
+
+        int saleId =
+                ((Number)
+                tableModel.getValueAt(
+                        modelRow,
+                        0
+                )).intValue();
+
+
+        String invoice =
+                String.valueOf(
+                        tableModel.getValueAt(
+                                modelRow,
+                                1
+                        )
+                );
+
+
+        String status =
+                String.valueOf(
+                        tableModel.getValueAt(
+                                modelRow,
+                                7
+                        )
+                );
+
+
+        if ("REFUNDED".equals(status)) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "This sale has already been fully refunded.",
+                    "Return Not Available",
+                    JOptionPane.WARNING_MESSAGE
+            );
+
+            return;
+        }
+
+
+        ReturnRefundDialog dialog =
+                new ReturnRefundDialog(
+                        this,
+                        saleId,
+                        invoice
+                );
+
+
+        dialog.setVisible(
+                true
+        );
+
+
+        if (dialog.isReturnCompleted()) {
+
+            loadSalesHistory();
+
+            salesTable.clearSelection();
+
+            updateViewButton();
+        }
+    }
+
     private void viewSelectedSale() {
 
         // Get the selected row from the visible table
