@@ -21,3 +21,11 @@ Thumbs.db
 
 # Local database credentials
 src/main/resources/db.properties
+
+/config/db.properties
+
+# Local database configuration
+/config/db.properties
+
+# Generated release packages
+/dist/

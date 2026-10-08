@@ -10,6 +10,8 @@ package com.supermart.util;
  */
 import java.util.prefs.Preferences;
 
+
+
 public final class AppPreferences {
 
     private static final Preferences PREFS =
@@ -22,6 +24,37 @@ public final class AppPreferences {
 
     private static final String KEY_FONT_SIZE =
             "ui.fontSize";
+
+    // Store information
+    private static final String KEY_STORE_NAME =
+            "store.name";
+
+    public static final String DEFAULT_STORE_NAME =
+            "SuperMart";
+
+    
+    /*
+    public static String getStoreName() {
+        return PREFS.get(
+                KEY_STORE_NAME,
+                DEFAULT_STORE_NAME
+        );
+    }
+
+    public static void setStoreName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException(
+                    "Store name cannot be empty."
+            );
+        }
+
+        PREFS.put(
+                KEY_STORE_NAME,
+                name.trim()
+        );
+    } */
+    
+    
 
     public static final String THEME_LIGHT =
             "LIGHT";
@@ -102,8 +135,8 @@ public final class AppPreferences {
                 safeSize
         );
     }
-
-
+    /*
+    
     public static void resetAppearance() {
 
         PREFS.put(
@@ -115,5 +148,44 @@ public final class AppPreferences {
                 KEY_FONT_SIZE,
                 DEFAULT_FONT_SIZE
         );
-    }
+    } */
+    
+    
+        public static void resetAppearance() {
+
+            PREFS.put(
+                    KEY_THEME,
+                    THEME_LIGHT
+            );
+
+            PREFS.putInt(
+                    KEY_FONT_SIZE,
+                    DEFAULT_FONT_SIZE
+            );
+        }
+
+
+        public static String getStoreName() {
+
+            return PREFS.get(
+                    KEY_STORE_NAME,
+                    DEFAULT_STORE_NAME
+            );
+        }
+
+
+        public static void setStoreName(String name) {
+
+            if (name == null || name.isBlank()) {
+                throw new IllegalArgumentException(
+                        "Store name cannot be empty."
+                );
+            }
+
+            PREFS.put(
+                    KEY_STORE_NAME,
+                    name.trim()
+            );
+        }  
+    
 }
