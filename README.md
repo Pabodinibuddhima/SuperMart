@@ -256,8 +256,8 @@ Developers need:
 Clone the repository:
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/YOUR-REPOSITORY.git
-cd YOUR-REPOSITORY
+git clone https://github.com/Pabodinibuddhima/SuperMart.git
+cd SuperMart
 ```
 
 Configure the database using the instructions above.
