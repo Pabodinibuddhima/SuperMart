@@ -1,4 +1,4 @@
-# SuperMart — Sales & Inventory Management System
+# SuperMart - Sales & Inventory Management System
 
 **Enterprise Application Development Coursework | Java Desktop Application | Java Swing + MySQL**
 
