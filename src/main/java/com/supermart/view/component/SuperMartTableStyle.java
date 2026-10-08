@@ -8,6 +8,8 @@ package com.supermart.view.component;
  *
  * @author pabodini
  */
+
+import com.supermart.util.AppearanceManager;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -49,7 +51,7 @@ public final class SuperMartTableStyle {
     // =========================================================
 
     public static void apply(JTable table) {
-
+        
         // ---------- General table ----------
         table.setRowHeight(42);
 
@@ -61,31 +63,41 @@ public final class SuperMartTableStyle {
                 )
         );
 
-        table.setForeground(
-                TEXT_PRIMARY
-        );
+        boolean dark =
+                AppearanceManager.isDarkMode();
 
-        table.setBackground(
-                Color.WHITE
-        );
+        Color textPrimary =
+                dark
+                        ? AppearanceManager.DARK_TEXT
+                        : TEXT_PRIMARY;
 
-        table.setGridColor(
-                GRID_COLOR
-        );
+        Color gridColor =
+                dark
+                        ? AppearanceManager.DARK_DIVIDER
+                        : GRID_COLOR;
+
+        Color tableBackground =
+                dark
+                        ? AppearanceManager.DARK_SURFACE
+                        : Color.WHITE;
+
+        Color selectionBackground =
+                dark
+                        ? AppearanceManager.DARK_SELECTED
+                        : SELECTION_BACKGROUND;
+
+        table.setForeground(textPrimary);
+        table.setBackground(tableBackground);
+
+        table.setGridColor(gridColor);
 
         table.setShowVerticalLines(false);
         table.setShowHorizontalLines(true);
 
-        table.setSelectionBackground(
-                SELECTION_BACKGROUND
-        );
-
-        table.setSelectionForeground(
-                TEXT_PRIMARY
-        );
+        table.setSelectionBackground(selectionBackground);
+        table.setSelectionForeground(textPrimary);
 
         table.setFillsViewportHeight(true);
-
 
         // ---------- Header ----------
         JTableHeader tableHeader =
@@ -98,15 +110,19 @@ public final class SuperMartTableStyle {
                         12
                 )
         );
-
+        
         tableHeader.setForeground(
-                TEXT_SECONDARY
+                dark
+                        ? AppearanceManager.DARK_TEXT
+                        : TEXT_SECONDARY
         );
 
         tableHeader.setBackground(
-                HEADER_BACKGROUND
+                dark
+                        ? AppearanceManager.DARK_RAISED
+                        : HEADER_BACKGROUND
         );
-
+        
         tableHeader.setPreferredSize(
                 new Dimension(
                         tableHeader
@@ -189,14 +205,27 @@ public final class SuperMartTableStyle {
                         tableHeader.getFont()
                 );
 
-                setForeground(
-                        TEXT_SECONDARY
-                );
+                if (AppearanceManager.isDarkMode()) {
 
-                setBackground(
-                        HEADER_BACKGROUND
-                );
+                    setForeground(
+                            AppearanceManager.DARK_TEXT
+                    );
 
+                    setBackground(
+                            AppearanceManager.DARK_RAISED
+                    );
+
+                } else {
+
+                    setForeground(
+                            TEXT_SECONDARY
+                    );
+
+                    setBackground(
+                            HEADER_BACKGROUND
+                    );
+                }
+                
                 setOpaque(true);
 
 

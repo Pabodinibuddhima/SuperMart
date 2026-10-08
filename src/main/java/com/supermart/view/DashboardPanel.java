@@ -4,7 +4,6 @@
  */
 //package com.supermart.view;
 
-
 /**
  *
  * @author pabodini
@@ -14,6 +13,7 @@ package com.supermart.view;
 
 import com.supermart.dao.DashboardDAO;
 import com.supermart.model.Product;
+import com.supermart.util.AppearanceManager;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -25,12 +25,16 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 public class DashboardPanel extends JPanel {
 
@@ -52,10 +56,15 @@ public class DashboardPanel extends JPanel {
     
     private final DashboardDAO dashboardDAO;
 
+    private JLabel todaySalesValueLabel;
+    private JLabel transactionsValueLabel;
+    
     private JLabel productsValueLabel;
     private JLabel lowStockValueLabel;
+    private JPanel recentSalesContentPanel;
 
     private JPanel lowStockContentPanel;
+    private JPanel outOfStockContentPanel;
 
     public DashboardPanel() {
         
@@ -122,21 +131,30 @@ public class DashboardPanel extends JPanel {
 
         statisticsPanel.setAlignmentX(LEFT_ALIGNMENT);
 
+        todaySalesValueLabel =
+                createValueLabel("Rs. 0.00");
+
         statisticsPanel.add(
-                createStatCard(
+                createDynamicStatCard(
                         "Today's Sales",
-                        "Rs. 0.00",
-                        "Total revenue today"
+                        todaySalesValueLabel,
+                        "Net revenue today"
                 )
         );
 
+
+        transactionsValueLabel =
+                createValueLabel("0");
+
         statisticsPanel.add(
-                createStatCard(
+                createDynamicStatCard(
                         "Transactions",
-                        "0",
+                        transactionsValueLabel,
                         "Sales completed today"
                 )
         );
+        
+        
         productsValueLabel = createValueLabel("0");
 
         statisticsPanel.add(
@@ -167,24 +185,32 @@ public class DashboardPanel extends JPanel {
         );
 
         // ---------- Lower dashboard ----------
-        JPanel lowerSection =
-                new JPanel(new GridLayout(1, 2, 18, 0));
+        
+        JPanel lowerSection = new JPanel(new GridBagLayout());
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weighty = 1.0;
+
+        gbc.gridx = 0;
+        gbc.weightx = 2.0;
+        gbc.insets = new Insets(0, 0, 0, 16);
+        lowerSection.add(createRecentSalesSection(), gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
+        gbc.insets = new Insets(0, 0, 0, 16);
+        lowerSection.add(createLowStockSection(), gbc);
+
+        gbc.gridx = 2;
+        gbc.weightx = 1.0;
+        gbc.insets = new Insets(0, 0, 0, 0);
+        lowerSection.add(createOutOfStockSection(), gbc);
 
         lowerSection.setOpaque(false);
         lowerSection.setAlignmentX(LEFT_ALIGNMENT);
 
-        lowerSection.add(
-                createSectionCard(
-                        "Recent Sales",
-                        "No sales have been recorded yet."
-                )
-        );     
-        
-        lowerSection.add(
-                createLowStockSection()
-        );
-        
-        
         dashboardContent.add(lowerSection);
 
         add(dashboardContent, BorderLayout.NORTH);
@@ -244,7 +270,120 @@ public class DashboardPanel extends JPanel {
 
         return card;
     }
-    
+
+    private JPanel createRecentSalesSection() {
+
+        JPanel card =
+                new JPanel(
+                        new BorderLayout()
+                );
+
+        card.setBackground(
+                CARD_BACKGROUND
+        );
+
+        card.setPreferredSize(
+                new Dimension(0, 300) //220
+        );
+
+        card.setBorder(
+                BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(
+                                BORDER
+                        ),
+                        BorderFactory.createEmptyBorder(
+                                20, 22, 20, 22
+                        )
+                )
+        );
+
+
+        JLabel titleLabel =
+                new JLabel("Recent Sales");
+
+        titleLabel.setFont(
+                new Font(
+                        "SansSerif",
+                        Font.BOLD,
+                        16
+                )
+        );
+
+        titleLabel.setForeground(
+                TEXT_PRIMARY
+        );
+
+
+        JPanel header =
+                new JPanel(
+                        new FlowLayout(
+                                FlowLayout.LEFT,
+                                0,
+                                0
+                        )
+                );
+
+        header.setOpaque(false);
+
+        header.setBorder(
+                BorderFactory.createEmptyBorder(
+                        0, 0, 10, 0
+                )
+        );
+
+        header.add(titleLabel);
+
+
+        recentSalesContentPanel =
+                new JPanel();
+
+        recentSalesContentPanel.setOpaque(false);
+        
+        
+        recentSalesContentPanel.setBorder(
+                BorderFactory.createEmptyBorder(
+                        12, 12, 12, 12
+                )
+        );
+
+        recentSalesContentPanel.setLayout(
+                new BoxLayout(
+                        recentSalesContentPanel,
+                        BoxLayout.Y_AXIS
+                )
+        );
+
+
+        card.add(
+                header,
+                BorderLayout.NORTH
+        );
+
+        JScrollPane recentSalesScrollPane =
+                new JScrollPane(recentSalesContentPanel);
+
+        recentSalesScrollPane.setBorder(null);
+        recentSalesScrollPane.setOpaque(false);
+        recentSalesScrollPane.getViewport().setOpaque(false);
+
+        recentSalesScrollPane.setHorizontalScrollBarPolicy(
+                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER
+        );
+
+        recentSalesScrollPane.setVerticalScrollBarPolicy(
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED
+        );
+
+        recentSalesScrollPane.getVerticalScrollBar().setUnitIncrement(16);
+
+        card.add(
+                recentSalesScrollPane,
+                BorderLayout.CENTER
+        );
+
+        return card;
+    }
+
     private JPanel createLowStockSection() {
 
         JPanel card =
@@ -327,6 +466,59 @@ public class DashboardPanel extends JPanel {
 
         return card;
     }
+
+    private JPanel createOutOfStockSection() {
+
+        JPanel card = new JPanel(new BorderLayout());
+
+        card.setBackground(CARD_BACKGROUND);
+        card.setPreferredSize(new Dimension(0, 220));
+
+        card.setBorder(
+                BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(BORDER),
+                        BorderFactory.createEmptyBorder(
+                                20, 22, 20, 22
+                        )
+                )
+        );
+
+        JLabel titleLabel = new JLabel("Out of Stock");
+
+        titleLabel.setFont(
+                new Font("SansSerif", Font.BOLD, 16)
+        );
+
+        titleLabel.setForeground(TEXT_PRIMARY);
+
+        JPanel header = new JPanel(
+                new FlowLayout(FlowLayout.LEFT, 0, 0)
+        );
+
+        header.setOpaque(false);
+        header.add(titleLabel);
+
+        outOfStockContentPanel = new JPanel();
+
+        outOfStockContentPanel.setOpaque(false);
+
+        outOfStockContentPanel.setLayout(
+                new BoxLayout(
+                        outOfStockContentPanel,
+                        BoxLayout.Y_AXIS
+                )
+        );
+
+        card.add(header, BorderLayout.NORTH);
+        card.add(
+                outOfStockContentPanel,
+                BorderLayout.CENTER
+        );
+
+        return card;
+    }
+
+    
     private JLabel createValueLabel(
             String initialValue
     ) {
@@ -481,6 +673,16 @@ public class DashboardPanel extends JPanel {
     public final void loadDashboardData() {
 
         try {
+            
+            
+            java.math.BigDecimal todaySales =
+                    dashboardDAO.getTodaySalesTotal();
+
+            int todayTransactions =
+                    dashboardDAO.getTodayTransactionCount();
+
+            List<String> recentSales =
+                    dashboardDAO.getRecentSales();
 
             // ---------------------------------
             // Statistics
@@ -494,6 +696,21 @@ public class DashboardPanel extends JPanel {
                     dashboardDAO
                             .getLowStockCount();
 
+            
+            
+            todaySalesValueLabel.setText(
+                    "Rs. "
+                    + todaySales.setScale(
+                            2,
+                            java.math.RoundingMode.HALF_UP
+                    )
+            );
+
+            transactionsValueLabel.setText(
+                    String.valueOf(todayTransactions)
+            );
+            
+            
 
             productsValueLabel.setText(
                     String.valueOf(productCount)
@@ -503,6 +720,104 @@ public class DashboardPanel extends JPanel {
                     String.valueOf(lowStockCount)
             );
 
+            // ---------------------------------
+            // Recent sales
+            // ---------------------------------
+
+            recentSalesContentPanel.removeAll();
+
+            if (recentSales.isEmpty()) {
+
+                JLabel emptyLabel =
+                        new JLabel(
+                                "No sales have been recorded yet."
+                        );
+
+                emptyLabel.setFont(
+                        new Font(
+                                "SansSerif",
+                                Font.PLAIN,
+                                13
+                        )
+                );
+
+                emptyLabel.setForeground(
+                        AppearanceManager.isDarkMode()
+                                ? AppearanceManager.DARK_SECONDARY
+                                : TEXT_SECONDARY
+                );
+
+                emptyLabel.setBorder(
+                        BorderFactory.createEmptyBorder(
+                                18, 0, 0, 0
+                        )
+                );
+
+                recentSalesContentPanel.add(
+                        emptyLabel
+                );
+
+            } else {
+
+                for (String sale : recentSales) {
+
+                    String[] parts = sale.split("\\s+•\\s+", 4);
+
+                    JPanel saleRow = new JPanel();
+                    saleRow.setOpaque(false);
+                    saleRow.setLayout(
+                            new BoxLayout(saleRow, BoxLayout.Y_AXIS)
+                    );
+                    saleRow.setAlignmentX(LEFT_ALIGNMENT);
+
+                    Color primary = AppearanceManager.isDarkMode()
+                            ? AppearanceManager.DARK_TEXT
+                            : TEXT_PRIMARY;
+
+                    Color secondary = AppearanceManager.isDarkMode()
+                            ? AppearanceManager.DARK_SECONDARY
+                            : TEXT_SECONDARY;
+
+                    String firstLine;
+                    String secondLine;
+
+                    if (parts.length == 4) {
+                        firstLine = parts[0] + "  •  " + parts[2];
+                        secondLine = parts[1] + "  •  " + parts[3];
+                    } else {
+                        firstLine = sale;
+                        secondLine = "";
+                    }
+
+                    JLabel mainLabel = new JLabel(firstLine);
+                    mainLabel.setFont(
+                            new Font("SansSerif", Font.BOLD, 12)
+                    );
+                    mainLabel.setForeground(primary);
+
+                    JLabel detailLabel = new JLabel(secondLine);
+                    detailLabel.setFont(
+                            new Font("SansSerif", Font.PLAIN, 11)
+                    );
+                    detailLabel.setForeground(secondary);
+
+                    saleRow.add(mainLabel);
+
+                    if (!secondLine.isEmpty()) {
+                        saleRow.add(Box.createVerticalStrut(3));
+                        saleRow.add(detailLabel);
+                    }
+
+                    recentSalesContentPanel.add(saleRow);
+                    recentSalesContentPanel.add(
+                            Box.createVerticalStrut(10)
+                    );
+                }
+            
+            }
+
+            recentSalesContentPanel.revalidate();
+            recentSalesContentPanel.repaint();
 
             // ---------------------------------
             // Low-stock products
@@ -551,16 +866,23 @@ public class DashboardPanel extends JPanel {
                         Box.createVerticalStrut(14)
                 );
 
-
                 for (Product product
                         : lowStockProducts) {
+
+                    boolean outOfStock =
+                            product.getQuantity() <= 0;
+
+                    String stockText =
+                            outOfStock
+                                    ? "OUT OF STOCK"
+                                    : product.getQuantity()
+                                            + " remaining";
 
                     JLabel productLabel =
                             new JLabel(
                                     product.getName()
-                                            + "     "
-                                            + product.getQuantity()
-                                            + " remaining"
+                                            + "     •     "
+                                            + stockText
                             );
 
                     productLabel.setFont(
@@ -570,10 +892,37 @@ public class DashboardPanel extends JPanel {
                                     13
                             )
                     );
+                    
+                    if (outOfStock) {
 
-                    productLabel.setForeground(
-                            TEXT_SECONDARY
-                    );
+                        productLabel.setForeground(
+                                new Color(210, 82, 82)
+                        );
+
+                        productLabel.setFont(
+                                new Font(
+                                        "SansSerif",
+                                        Font.BOLD,
+                                        13
+                                )
+                        );
+
+                    } else {
+
+                        productLabel.setForeground(
+                                AppearanceManager.isDarkMode()
+                                        ? AppearanceManager.DARK_SECONDARY
+                                        : TEXT_SECONDARY
+                        );
+
+                        productLabel.setFont(
+                                new Font(
+                                        "SansSerif",
+                                        Font.PLAIN,
+                                        13
+                                )
+                        );
+                    }
 
                     lowStockContentPanel.add(
                             productLabel
@@ -588,7 +937,73 @@ public class DashboardPanel extends JPanel {
 
             lowStockContentPanel.revalidate();
             lowStockContentPanel.repaint();
+            
+            // ---------- Out-of-stock products ----------
 
+            List<Product> outOfStockProducts =
+                    dashboardDAO.getOutOfStockProducts();
+
+            outOfStockContentPanel.removeAll();
+
+            if (outOfStockProducts.isEmpty()) {
+
+                JLabel emptyLabel =
+                        new JLabel("No products are out of stock.");
+
+                emptyLabel.setFont(
+                        new Font("SansSerif", Font.PLAIN, 13)
+                );
+
+                emptyLabel.setForeground(
+                        AppearanceManager.isDarkMode()
+                                ? AppearanceManager.DARK_SECONDARY
+                                : TEXT_SECONDARY
+                );
+
+                emptyLabel.setBorder(
+                        BorderFactory.createEmptyBorder(
+                                18, 0, 0, 0
+                        )
+                );
+
+                outOfStockContentPanel.add(emptyLabel);
+
+            } else {
+
+                outOfStockContentPanel.add(
+                        Box.createVerticalStrut(14)
+                );
+
+                for (Product product : outOfStockProducts) {
+
+                    JLabel productLabel = new JLabel(
+                            product.getName() + "  •  OUT OF STOCK"
+                    );
+
+                    productLabel.setFont(
+                            new Font(
+                                    "SansSerif",
+                                    Font.BOLD,
+                                    13
+                            )
+                    );
+
+                    productLabel.setForeground(
+                            AppearanceManager.isDarkMode()
+                                    ? new Color(235, 125, 125)
+                                    : new Color(175, 55, 55)
+                    );
+
+                    outOfStockContentPanel.add(productLabel);
+
+                    outOfStockContentPanel.add(
+                            Box.createVerticalStrut(9)
+                    );
+                }
+            }
+
+            outOfStockContentPanel.revalidate();
+            outOfStockContentPanel.repaint();
 
         } catch (SQLException e) {
 

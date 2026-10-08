@@ -17,6 +17,7 @@ import com.supermart.model.ReturnItem;
 import com.supermart.service.ReturnService;
 import com.supermart.view.component.PlaceholderTextField;
 import com.supermart.view.component.SuperMartTableStyle;
+import com.supermart.util.AppearanceManager;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -447,15 +448,17 @@ public class ReturnRefundDialog extends JDialog {
 
         JTextField quantityEditorField =
                 new JTextField();
-
+        
         quantityEditorField.setHorizontalAlignment(
                 JTextField.CENTER
         );
-
+        
         quantityEditorField.setBorder(
                 BorderFactory.createCompoundBorder(
                         BorderFactory.createLineBorder(
-                                new Color(190, 194, 200)
+                                AppearanceManager.isDarkMode()
+                                        ? AppearanceManager.DARK_BORDER
+                                        : new Color(190, 194, 200)
                         ),
                         BorderFactory.createEmptyBorder(
                                 3,
@@ -467,8 +470,23 @@ public class ReturnRefundDialog extends JDialog {
         );
 
         quantityEditorField.setBackground(
-                Color.WHITE
+                AppearanceManager.isDarkMode()
+                        ? AppearanceManager.DARK_INPUT
+                        : Color.WHITE
         );
+
+        quantityEditorField.setForeground(
+                AppearanceManager.isDarkMode()
+                        ? AppearanceManager.DARK_TEXT
+                        : TEXT_PRIMARY
+        );
+
+        quantityEditorField.setCaretColor(
+                AppearanceManager.isDarkMode()
+                        ? AppearanceManager.DARK_TEXT
+                        : TEXT_PRIMARY
+        );
+
 
         quantityEditorField.setToolTipText(
                 "Enter the quantity to return"
@@ -538,18 +556,31 @@ public class ReturnRefundDialog extends JDialog {
                          * Slightly different background tells
                          * the user this is an input field.
                          */
-                        label.setBackground(
-                                new Color(
-                                        250,
-                                        250,
-                                        250
-                                )
-                        );
 
-                        label.setForeground(
-                                TEXT_PRIMARY
-                        );
+                        if (AppearanceManager.isDarkMode()) {
 
+                            label.setBackground(
+                                    isSelected
+                                            ? AppearanceManager.DARK_SELECTED
+                                            : AppearanceManager.DARK_INPUT
+                            );
+
+                            label.setForeground(
+                                    AppearanceManager.DARK_TEXT
+                            );
+
+                        } else {
+
+                            label.setBackground(
+                                    new Color(250, 250, 250)
+                            );
+
+                            label.setForeground(
+                                    TEXT_PRIMARY
+                            );
+                        }
+
+                        
                         label.setBorder(
                                 BorderFactory.createCompoundBorder(
                                         BorderFactory.createEmptyBorder(
@@ -560,11 +591,9 @@ public class ReturnRefundDialog extends JDialog {
                                         ),
                                         BorderFactory.createCompoundBorder(
                                                 BorderFactory.createLineBorder(
-                                                        new Color(
-                                                                190,
-                                                                194,
-                                                                200
-                                                        )
+                                                        AppearanceManager.isDarkMode()
+                                                                ? AppearanceManager.DARK_BORDER
+                                                                : new Color(190, 194, 200)
                                                 ),
                                                 BorderFactory.createEmptyBorder(
                                                         2,
@@ -575,7 +604,6 @@ public class ReturnRefundDialog extends JDialog {
                                         )
                                 )
                         );
-
 
                         return label;
                     }
@@ -631,11 +659,13 @@ public class ReturnRefundDialog extends JDialog {
                 )
         );
 
+        
         scrollPane.getViewport()
                 .setBackground(
-                        Color.WHITE
+                        AppearanceManager.isDarkMode()
+                                ? AppearanceManager.DARK_SURFACE
+                                : Color.WHITE
                 );
-
 
         card.add(
                 scrollPane,

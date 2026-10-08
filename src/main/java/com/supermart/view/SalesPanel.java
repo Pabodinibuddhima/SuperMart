@@ -16,6 +16,7 @@ import com.supermart.model.Customer;
 import com.supermart.model.Employee;
 import com.supermart.model.Product;
 import com.supermart.view.component.PlaceholderTextField;
+import com.supermart.util.AppearanceManager;
 
 import com.supermart.exception.InsufficientStockException;
 import com.supermart.model.Payment;
@@ -25,8 +26,6 @@ import com.supermart.service.SaleService;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-
-
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -110,6 +109,7 @@ public class SalesPanel extends JPanel {
     private JComboBox<String> paymentMethodComboBox;
 
     private JButton completeSaleButton;
+    private Runnable saleCompletedListener;
 
     public SalesPanel() {
 
@@ -247,9 +247,12 @@ public class SalesPanel extends JPanel {
                         "Sales History"
                 );
         
+        Dimension historySize =
+                historyButton.getPreferredSize();
+
         historyButton.setPreferredSize(
                 new Dimension(
-                        historyButton.getPreferredSize().width,
+                        historySize.width + 24,
                         36
                 )
         );
@@ -263,16 +266,7 @@ public class SalesPanel extends JPanel {
                 titlePanel,
                 BorderLayout.WEST
         );
-        
-        /*
-        header.add(
-                historyButton,
-                BorderLayout.EAST
-        ); */
-        
-        
-        
-        
+
         JPanel historyButtonPanel =
                 new JPanel(
                         new FlowLayout(
@@ -351,8 +345,6 @@ public class SalesPanel extends JPanel {
 
         return wrapper;
     }
-
-
     // ==========================================
     // CUSTOMER / CASHIER
     // ==========================================
@@ -748,8 +740,8 @@ public class SalesPanel extends JPanel {
 
         discountTypeComboBox.setPreferredSize(
                 new Dimension(
-                        95,
-                        32
+                        105,//95
+                        34 //32
                 )
         );
 
@@ -762,8 +754,8 @@ public class SalesPanel extends JPanel {
 
         discountField.setPreferredSize(
                 new Dimension(
-                        100,
-                        32
+                        105, //100
+                        34 //32
                 )
         );
 
@@ -796,7 +788,7 @@ public class SalesPanel extends JPanel {
 
         gbc.gridx = 0;
         gbc.gridy = 1;
-        gbc.weightx = 1;
+        gbc.weightx = 0.42;//1
 
         panel.add(
                 discountLabel,
@@ -805,7 +797,7 @@ public class SalesPanel extends JPanel {
 
 
         gbc.gridx = 1;
-        gbc.weightx = 0;
+        gbc.weightx = 0.42; //0
 
         panel.add(
                 discountInputPanel,
@@ -862,15 +854,15 @@ public class SalesPanel extends JPanel {
 
         paymentMethodComboBox.setPreferredSize(
                 new Dimension(
-                        130,
-                        32
+                        190,//130
+                        34 //32
                 )
         );
 
 
         gbc.gridx = 0;
         gbc.gridy = 3;
-        gbc.weightx = 1;
+        gbc.weightx = 0.42;//1
 
         panel.add(
                 paymentMethodLabel,
@@ -917,8 +909,8 @@ public class SalesPanel extends JPanel {
 
         amountReceivedField.setPreferredSize(
                 new Dimension(
-                        130,
-                        32
+                        190, //130
+                        34
                 )
         );
 
@@ -929,7 +921,7 @@ public class SalesPanel extends JPanel {
 
         gbc.gridx = 0;
         gbc.gridy = 4;
-        gbc.weightx = 1;
+        gbc.weightx = 0.42; //1
 
         panel.add(
                 amountLabel,
@@ -938,7 +930,7 @@ public class SalesPanel extends JPanel {
 
 
         gbc.gridx = 1;
-        gbc.weightx = 0;
+        gbc.weightx = 0.42; //0
 
         panel.add(
                 amountReceivedField,
@@ -1101,7 +1093,7 @@ public class SalesPanel extends JPanel {
 
 
         gbc.gridx = 1;
-        gbc.weightx = 0;
+        gbc.weightx = 0.58; //0
 
         panel.add(
                 valueLabel,
@@ -1374,7 +1366,9 @@ public class SalesPanel extends JPanel {
                 );
 
         row.setBackground(
-                CARD_BACKGROUND
+                AppearanceManager.isDarkMode()
+                        ? AppearanceManager.DARK_INPUT
+                        : CARD_BACKGROUND
         );
 
         row.setBorder(
@@ -1426,17 +1420,25 @@ public class SalesPanel extends JPanel {
         );
 
         name.setForeground(
-                TEXT_PRIMARY
-        );
+                AppearanceManager.isDarkMode()
+                        ? AppearanceManager.DARK_TEXT
+                        : TEXT_PRIMARY
+        );       
 
+        boolean outOfStock =
+                product.getQuantity() <= 0;
 
         JLabel details =
                 new JLabel(
-                        "Rs. "
-                        + product.getSellingPrice()
-                        + "    •    Stock: "
-                        + product.getQuantity()
+                        outOfStock
+                        ? "Rs. " + product.getSellingPrice()
+                            + "    •    OUT OF STOCK"
+                        : "Rs. " + product.getSellingPrice()
+                            + "    •    Stock: "
+                            + product.getQuantity()
                 );
+        
+        
 
         details.setFont(
                 new Font(
@@ -1447,8 +1449,13 @@ public class SalesPanel extends JPanel {
         );
 
         details.setForeground(
-                TEXT_SECONDARY
+                outOfStock
+                ? new Color(220, 95, 95)
+                : AppearanceManager.isDarkMode()
+                    ? AppearanceManager.DARK_SECONDARY
+                    : TEXT_SECONDARY
         );
+
 
 
         information.add(name);
@@ -1464,6 +1471,41 @@ public class SalesPanel extends JPanel {
                 createSecondaryButton(
                         "Add"
                 );
+        
+        
+        boolean dark =
+                AppearanceManager.isDarkMode();
+
+        addButton.setForeground(
+                dark
+                        ? AppearanceManager.DARK_TEXT
+                        : TEXT_PRIMARY
+        );
+
+        addButton.setBackground(
+                dark
+                        ? AppearanceManager.DARK_RAISED
+                        : Color.WHITE
+        );
+
+        addButton.setOpaque(true);
+        addButton.setFocusPainted(false);
+
+        addButton.setBorder(
+                BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(
+                                dark
+                                        ? AppearanceManager.DARK_BORDER
+                                        : BORDER
+                        ),
+                        BorderFactory.createEmptyBorder(
+                                7,
+                                14,
+                                7,
+                                14
+                        )
+                )
+        );
 
         addButton.setEnabled(
                 product.getQuantity() > 0
@@ -1558,9 +1600,7 @@ public class SalesPanel extends JPanel {
     // ==========================================
     // REFRESH CART
     // ==========================================
-    
-    
-    
+
     private void refreshCart() {
 
         cartItemsPanel.removeAll();
@@ -1642,14 +1682,22 @@ public class SalesPanel extends JPanel {
                 );
 
         row.setBackground(
-                CARD_BACKGROUND
+                AppearanceManager.isDarkMode()
+                        ? AppearanceManager.DARK_INPUT
+                        : CARD_BACKGROUND
         );
 
         row.setBorder(
                 BorderFactory.createCompoundBorder(
+
+                        
                         BorderFactory.createLineBorder(
-                                BORDER
+                                AppearanceManager.isDarkMode()
+                                        ? AppearanceManager.DARK_BORDER
+                                        : BORDER
                         ),
+                        
+                        
                         BorderFactory.createEmptyBorder(
                                 12,
                                 14,
@@ -1698,7 +1746,9 @@ public class SalesPanel extends JPanel {
         );
 
         nameLabel.setForeground(
-                TEXT_PRIMARY
+                AppearanceManager.isDarkMode()
+                        ? AppearanceManager.DARK_TEXT
+                        : TEXT_PRIMARY
         );
 
 
@@ -1724,10 +1774,12 @@ public class SalesPanel extends JPanel {
                 )
         );
 
-        priceLabel.setForeground(
-                TEXT_SECONDARY
-        );
 
+        priceLabel.setForeground(
+                AppearanceManager.isDarkMode()
+                        ? AppearanceManager.DARK_SECONDARY
+                        : TEXT_SECONDARY
+        );
 
         information.add(
                 nameLabel
@@ -1784,6 +1836,12 @@ public class SalesPanel extends JPanel {
                         30
                 )
         );
+        
+        quantityLabel.setForeground(
+                AppearanceManager.isDarkMode()
+                        ? AppearanceManager.DARK_TEXT
+                        : TEXT_PRIMARY
+        );
 
 
         JButton increaseButton =
@@ -1806,7 +1864,9 @@ public class SalesPanel extends JPanel {
         );
 
         lineTotalLabel.setForeground(
-                TEXT_PRIMARY
+                AppearanceManager.isDarkMode()
+                        ? AppearanceManager.DARK_TEXT
+                        : TEXT_PRIMARY
         );
 
         lineTotalLabel.setPreferredSize(
@@ -2720,6 +2780,10 @@ public class SalesPanel extends JPanel {
 
 
         refreshCart();
+        if (saleCompletedListener != null) {
+            saleCompletedListener.run();
+        }
+        
     }
     
     // ==========================================
@@ -2735,6 +2799,10 @@ public class SalesPanel extends JPanel {
         }
     }
     
+    public void setSaleCompletedListener(Runnable listener) {
+        this.saleCompletedListener = listener;
+    }
+
     // ==========================================
     // SALES HISTORY
     // ==========================================
@@ -2761,8 +2829,6 @@ public class SalesPanel extends JPanel {
                 true
         );
     }
-
-
 
     // ==========================================
     // UI HELPERS
@@ -2867,7 +2933,6 @@ public class SalesPanel extends JPanel {
         return label;
     }
 
-
     private JButton createPrimaryButton(
             String text
     ) {
@@ -2947,16 +3012,16 @@ public class SalesPanel extends JPanel {
 
         return button;
     }
-    
-    
-    
-    
+
     private JButton createSmallButton(
             String text
     ) {
 
         JButton button =
                 new JButton(text);
+
+        boolean dark =
+                AppearanceManager.isDarkMode();
 
         button.setFont(
                 new Font(
@@ -2967,18 +3032,39 @@ public class SalesPanel extends JPanel {
         );
 
         button.setForeground(
-                TEXT_PRIMARY
+                dark
+                        ? AppearanceManager.DARK_TEXT
+                        : TEXT_PRIMARY
         );
 
         button.setBackground(
-                Color.WHITE
+                dark
+                        ? AppearanceManager.DARK_RAISED
+                        : Color.WHITE
         );
 
         button.setFocusPainted(false);
+        button.setOpaque(true);
 
         button.setCursor(
                 Cursor.getPredefinedCursor(
                         Cursor.HAND_CURSOR
+                )
+        );
+
+        button.setBorder(
+                BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(
+                                dark
+                                        ? AppearanceManager.DARK_BORDER
+                                        : BORDER
+                        ),
+                        BorderFactory.createEmptyBorder(
+                                5,
+                                9,
+                                5,
+                                9
+                        )
                 )
         );
 
@@ -2991,9 +3077,10 @@ public class SalesPanel extends JPanel {
                 )
         );
 
-
         return button;
     }
+
+
     
     private void showDatabaseError(
             String message,

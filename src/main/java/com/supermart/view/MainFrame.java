@@ -1,4 +1,5 @@
 package com.supermart.view;
+import com.supermart.util.AppearanceManager;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -38,8 +39,9 @@ public class MainFrame extends JFrame {
     private final EmployeesPanel employeesPanel;
     private final SalesPanel salesPanel;
     private final ReportsPanel reportsPanel;
-    private JButton selectedNavigationButton;
+    private final SettingsPanel settingsPanel;
     
+    private JButton selectedNavigationButton;
 
     public MainFrame() {
 
@@ -83,12 +85,24 @@ public class MainFrame extends JFrame {
         
         suppliersPanel =
                 new SuppliersPanel();
+        
         employeesPanel =
                 new EmployeesPanel();
+        
         salesPanel =
                 new SalesPanel();
+        
+        salesPanel.setSaleCompletedListener(() -> {
+            dashboardPanel.loadDashboardData();
+            inventoryPanel.refreshPanel();
+            productsPanel.refreshPanel();
+        });
+   
         reportsPanel =
             new ReportsPanel();
+        
+        settingsPanel =
+            new SettingsPanel();
 
         // ==========================================
         // REGISTER PANELS WITH CARDLAYOUT
@@ -134,6 +148,11 @@ public class MainFrame extends JFrame {
                 reportsPanel,
                 "REPORTS"
         );
+        
+        contentPanel.add(
+                settingsPanel,
+                "SETTINGS"
+        );
 
         // Sidebar
         add(createSidebar(), BorderLayout.WEST);
@@ -141,6 +160,10 @@ public class MainFrame extends JFrame {
         add(contentPanel, BorderLayout.CENTER);
 
         cardLayout.show(contentPanel, "DASHBOARD");
+        
+        AppearanceManager.installAutomaticWindowTheming();
+        
+        AppearanceManager.applySavedAppearance();
     }
 
     private JPanel createSidebar() {
@@ -185,8 +208,6 @@ public class MainFrame extends JFrame {
         
         JButton salesButton =
                 createNavigationButton("Sales");
-        
-        
 
         JButton productsButton =
                 createNavigationButton("Products");
@@ -326,8 +347,18 @@ public class MainFrame extends JFrame {
             );
         });
         
+        settingsButton.addActionListener(e -> {
 
+            cardLayout.show(
+                    contentPanel,
+                    "SETTINGS"
+            );
 
+            selectNavigationButton(
+                    settingsButton
+            );
+        });
+ 
         sidebar.add(dashboardButton);
         sidebar.add(Box.createVerticalStrut(5));
 
@@ -370,11 +401,7 @@ public class MainFrame extends JFrame {
         JButton button = new JButton(text);
 
         button.setFont(
-                new Font(
-                        "SansSerif",
-                        Font.PLAIN,
-                        14
-                )
+                new Font("SansSerif", Font.PLAIN, 14)
         );
 
         button.setHorizontalAlignment(
@@ -382,29 +409,31 @@ public class MainFrame extends JFrame {
         );
 
         button.setMaximumSize(
-                new Dimension(
-                        Integer.MAX_VALUE,
-                        42
-                )
+                new Dimension(Integer.MAX_VALUE, 42)
         );
 
         button.setPreferredSize(
-                new Dimension(
-                        180,
-                        42
-                )
+                new Dimension(180, 42)
         );
 
         button.setFocusPainted(false);
         button.setBorderPainted(false);
+        button.setContentAreaFilled(true);
         button.setOpaque(true);
 
+        boolean dark =
+                AppearanceManager.isDarkMode();
+
         button.setBackground(
-                SIDEBAR_BACKGROUND
+                dark
+                        ? AppearanceManager.DARK_RAISED
+                        : SIDEBAR_BACKGROUND
         );
 
         button.setForeground(
-                TEXT_SECONDARY
+                dark
+                        ? AppearanceManager.DARK_TEXT
+                        : TEXT_SECONDARY
         );
 
         button.setCursor(
@@ -414,28 +443,31 @@ public class MainFrame extends JFrame {
         );
 
         button.setMargin(
-                new Insets(
-                        0,
-                        14,
-                        0,
-                        14
-                )
+                new Insets(0, 14, 0, 14)
         );
 
         return button;
     }
-    
+
+
     private void selectNavigationButton(JButton button) {
 
-        // Reset the previously selected button
+        boolean dark =
+                AppearanceManager.isDarkMode();
+
+        // Reset previous button
         if (selectedNavigationButton != null) {
 
             selectedNavigationButton.setBackground(
-                    SIDEBAR_BACKGROUND
+                    dark
+                            ? AppearanceManager.DARK_RAISED
+                            : SIDEBAR_BACKGROUND
             );
 
             selectedNavigationButton.setForeground(
-                    TEXT_SECONDARY
+                    dark
+                            ? AppearanceManager.DARK_TEXT
+                            : TEXT_SECONDARY
             );
 
             selectedNavigationButton.setFont(
@@ -445,15 +477,22 @@ public class MainFrame extends JFrame {
                             14
                     )
             );
+
+            selectedNavigationButton.setOpaque(true);
+            selectedNavigationButton.setContentAreaFilled(true);
         }
 
-        // Highlight the newly selected button
+        // Selected button
         button.setBackground(
-                ACTIVE_BACKGROUND
+                dark
+                        ? AppearanceManager.DARK_SELECTED
+                        : ACTIVE_BACKGROUND
         );
 
         button.setForeground(
-                TEXT_PRIMARY
+                dark
+                        ? AppearanceManager.DARK_TEXT
+                        : TEXT_PRIMARY
         );
 
         button.setFont(
@@ -463,6 +502,9 @@ public class MainFrame extends JFrame {
                         14
                 )
         );
+
+        button.setOpaque(true);
+        button.setContentAreaFilled(true);
 
         selectedNavigationButton = button;
     }
