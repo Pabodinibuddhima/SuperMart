@@ -1,83 +1,159 @@
 # SuperMart - Sales & Inventory Management System
 
-**Enterprise Application Development Coursework | Java Desktop Application | Java Swing + MySQL**
+**Enterprise Application Development (EAD) Coursework | Java Swing • MySQL • JasperReports**
 
-## Download SuperMart
+SuperMart is a Java desktop application developed to support retail sales, inventory control, and business management operations.
 
-**[Download SuperMart v1.0.0 — Executable JAR & Release Package](https://github.com/Pabodinibuddhima/SuperMart/releases/tag/v1.0.0)**
+## Download the Application
 
-The release provides the executable Java application (`SuperMart.jar`) and, the complete installation package (`SuperMart-v1.0.0.zip`).
+### [Download SuperMart v1.0.0 - Executable JAR & Release Package](https://github.com/Pabodinibuddhima/SuperMart/releases/tag/v1.0.0)
 
-**Requirements:** Java 21 or newer and MySQL Server.
+The GitHub release provides:
 
-See the installation instructions below to configure the database and run the application.
+- **`SuperMart.jar`** - the executable Java application with required dependencies.
+- **`SuperMart-v1.0.0.zip`** - the complete release package, containing the JAR, database scripts, configuration template, and launcher scripts.
 
+**System requirements:** Java 21 and MySQL Server.
 
-SuperMart is a desktop-based Sales and Inventory Management System developed using Java Swing and MySQL. It provides a centralized interface for managing retail business operations, including sales, products, inventory, customers, suppliers, employees, returns, and financial reporting.
+**Important:** The application requires a configured MySQL database before it can be used. Follow the installation instructions below.
 
-## 1. Features
+---
+
+## Academic Information
+
+| Field | Details |
+|---|---|
+| Project | SuperMart - Sales & Inventory Management System |
+| Student | Samaranayake P.B |
+| Student ID | CODCSD253F-008 |
+| Institute | National Institute of Business Management (NIBM) |
+| Programme | Diploma in Computer System Design |
+| Batch | DCSD25.3F |
+| Module | Enterprise Application Development (EAD) |
+| Project Type | Individual Coursework |
+| Sector | Sales and Retail Management |
+| Final Deliverable | Executable JAR |
+
+## 1. Project Overview
+
+SuperMart is designed to simplify the daily operations of a retail business through a centralized desktop interface.
+
+The application integrates sales processing, product management, inventory tracking, customer and supplier management, employee records, returns and refunds, and financial reporting.
+
+It uses Java Swing for the user interface, MySQL for persistent data storage, JDBC for database connectivity, and JasperReports for reporting and PDF export.
+
+The project demonstrates object-oriented programming, layered application architecture, database operations, transaction processing, validation, exception handling, and standalone Java application deployment.
+
+## 2. Application Features
 
 ### Dashboard
-- Today's net sales and transaction count
-- Active product statistics
-- Recent sales transactions
+- Today's sales and transaction statistics
+- Active product count
 - Low-stock and out-of-stock alerts
+- Recent sales activity
+- Quick access to key management functions
 
-### Product and Inventory Management
-- Add, edit, activate, and deactivate products
-- Manage product prices, barcodes, categories, and suppliers
+### Product Management
+- Add and update product information
+- Manage categories, suppliers, prices, and stock information
+- Activate or deactivate products
+- Search, filter, and sort product records
+
+### Inventory Management
 - Record stock entries and adjustments
-- Track inventory transactions
-- Search, filter, and sort records
+- Monitor available stock
+- View stock transaction history
+- Automatically update inventory following sales and returns
+- Identify products requiring restocking
 
 ### Customer, Supplier, and Employee Management
-- Manage customer information
-- Maintain supplier records
-- Manage employee information and roles
-- Activate or deactivate records
+- Maintain customer records
+- Manage supplier information
+- Maintain employee information
+- Update and manage existing records
 
-### Sales and Payments
-- Create sales invoices
-- Select customers and cashiers
-- Add products to a shopping cart
-- Apply discounts
-- Process cash and card payments
-- Calculate payment totals and cash change
+### Sales and Payment Processing
+- Create sales transactions
+- Add products and quantities to a sales cart
+- Calculate totals and discounts
+- Process supported payment methods
+- Calculate cash change where applicable
 - View sales history and transaction details
+- Automatically reduce stock after successful sales
 
 ### Returns and Refunds
-- Process full and partial returns
+- Process full and partial product returns
 - Validate return quantities
-- Prevent returns exceeding quantities available for refund
-- Restore returned stock
-- Update sale refund status
+- Prevent invalid or excessive returns
+- Restore stock for returned products
+- Record refund information and update transaction status
 
 ### Reporting
 - Generate sales performance reports using JasperReports
-- View transaction and product sales information
+- Retrieve information from multiple related database tables
+- Display sales and product transaction details
 - Calculate gross sales, discounts, refunds, net sales, cost of goods sold, and gross profit
-- Export reports to PDF
+- Export generated reports to PDF
 
 ### Application Settings
-- Configure store information
-- Configure database connection details
+- Manage store information
+- Configure database connection settings
 - Test database connectivity
-- View system information
+- View application and system information
 
-## 2. Technologies Used
+## 3. Technologies and Tools
 
 | Technology | Purpose |
 |---|---|
-| Java 21 | Application development |
-| Java Swing | Desktop graphical interface |
-| MySQL | Relational database |
+| Java 21 | Core application development |
+| Java Swing | Desktop graphical user interface |
+| MySQL | Relational database management |
 | JDBC | Database connectivity |
-| Maven | Build and dependency management |
-| JasperReports 6.21.5 | Reporting and PDF export |
-| Maven Shade Plugin | Standalone JAR packaging |
-| Git and GitHub | Version control |
+| Apache Maven | Dependency and build management |
+| JasperReports 6.21.5 | Reporting and PDF generation |
+| Maven Shade Plugin | Packaging application dependencies into an executable JAR |
+| Git and GitHub | Version control and source code distribution |
+| Apache NetBeans | Development environment |
 
-## 3. Project Structure
+## 4. Application Architecture
+
+The project follows a layered, object-oriented structure to separate user interface components, business logic, database operations, and reporting.
+
+| Package | Responsibility |
+|---|---|
+| `model` | Application entities and data models |
+| `view` | Java Swing interface components |
+| `dao` | Database access and CRUD operations |
+| `service` | Business rules and transaction processing |
+| `exception` | Custom application exceptions |
+| `report` | JasperReports integration |
+| `util` | Database connections, configuration, and shared utilities |
+
+This separation supports maintainability, reuse, and structured error handling.
+
+## 5. Database Design
+
+SuperMart uses a MySQL database named `supermart_db`.
+
+The schema contains 11 related tables:
+
+1. `categories`
+2. `suppliers`
+3. `products`
+4. `stock_transactions`
+5. `customers`
+6. `employees`
+7. `sales`
+8. `sale_items`
+9. `payments`
+10. `returns`
+11. `return_items`
+
+The database uses relational constraints and foreign keys to maintain relationships between records.
+
+SQL scripts are provided for database creation and demonstration data.
+
+## 6. Project Structure
 
 ```text
 SuperMart/
@@ -103,26 +179,32 @@ SuperMart/
 └── README.md
 ```
 
-## 4. Requirements
+Generated JAR files and local database credentials are excluded from normal Git tracking.
 
-To run the standalone JAR, the target computer needs:
+The executable application is distributed separately through GitHub Releases.
 
-- Java Runtime version 21 or newer
-- MySQL Server compatible with the supplied database schema
-- A configured SuperMart database
+## 7. Installation Requirements
+
+To run the packaged application, the target computer requires:
+
+- Java 21 runtime or JDK
+- MySQL Server
+- A configured `supermart_db` database
 - The SuperMart release package
 
-**Maven, NetBeans, and the JDK compiler are not required to run the packaged JAR.**
+**NetBeans, Maven, and the Java compiler are not required to run the executable JAR.**
 
-An internet connection is not required for ordinary local application operation once the software and database are installed.
+An internet connection is not required for normal operation when the application connects to a local MySQL server.
 
-## 5. Download the Application
+## 8. Download and Extract
 
-Download the latest SuperMart release ZIP from the repository's **Releases** section.
+Download the application from:
 
-Extract the ZIP into a folder.
+**[SuperMart v1.0.0 Release](https://github.com/Pabodinibuddhima/SuperMart/releases/tag/v1.0.0)**
 
-The release package contains:
+Extract `SuperMart-v1.0.0.zip` into a suitable directory.
+
+Expected release structure:
 
 ```text
 SuperMart-Release/
@@ -136,15 +218,17 @@ SuperMart-Release/
 └── run-windows.bat
 ```
 
-## 6. Database Installation
+Keep the application, configuration folder, and database scripts together.
 
-### Step 1 — Install MySQL
+## 9. Database Setup
 
-Install MySQL Server on the target computer and ensure the database service is running.
+### Step 1 - Install MySQL
 
-### Step 2 — Import the Database Schema
+Install MySQL Server and ensure the MySQL service is running.
 
-Open a terminal or Command Prompt in the extracted `SuperMart-Release` folder.
+### Step 2 - Create the Database Tables
+
+Open a terminal or Command Prompt inside the extracted `SuperMart-Release` directory.
 
 Run:
 
@@ -152,23 +236,25 @@ Run:
 mysql -u root -p < database/schema.sql
 ```
 
-Enter your MySQL password when prompted.
+Enter the MySQL password when prompted.
 
-The schema creates the `supermart_db` database and its required tables.
+The script creates the `supermart_db` database and its required tables.
 
-### Step 3 — Optional Sample Data
+### Step 3 - Import Sample Data (Optional)
 
-For a new demonstration database, import the sample records:
+For demonstration purposes, sample records can be imported into a fresh database:
 
 ```bash
 mysql -u root -p supermart_db < database/sample_data.sql
 ```
 
-Use sample data only when appropriate for a fresh installation.
+Avoid importing sample data repeatedly into an existing database.
 
-## 7. Database Configuration
+## 10. Database Configuration
 
-Copy the provided configuration template.
+SuperMart uses an external configuration file, allowing database settings to be changed without rebuilding the JAR.
+
+Copy the configuration template.
 
 **Windows CMD:**
 
@@ -182,9 +268,9 @@ copy config\db.properties.example config\db.properties
 cp config/db.properties.example config/db.properties
 ```
 
-Open `config/db.properties` and configure the database connection.
+Open `config/db.properties` in a text editor.
 
-Example:
+Example configuration:
 
 ```properties
 db.url=jdbc:mysql://localhost:3306/supermart_db
@@ -192,17 +278,17 @@ db.user=root
 db.password=YOUR_MYSQL_PASSWORD
 ```
 
-Replace `YOUR_MYSQL_PASSWORD` with the correct password.
+Replace the example credentials with those of your configured MySQL account.
 
-The configuration file must remain in the `config` directory.
+The application reads its database configuration from the `config` directory.
 
-**Security:** Do not upload real database passwords or personal credentials to GitHub. The repository includes only a configuration template.
+**Security:** Actual database credentials are excluded from the public repository and release package.
 
-## 8. Running SuperMart
+## 11. Running the Application
 
 ### Windows 10 / Windows 11
 
-Open Command Prompt in the extracted release folder.
+Open Command Prompt inside the extracted `SuperMart-Release` directory.
 
 Run:
 
@@ -218,7 +304,7 @@ java -jar SuperMart.jar
 
 ### Linux
 
-Open a terminal in the extracted release folder.
+Open a terminal inside the extracted `SuperMart-Release` directory.
 
 Run:
 
@@ -233,36 +319,43 @@ Alternatively:
 java -jar SuperMart.jar
 ```
 
-The provided launch scripts ensure the application starts from its release directory so it can locate `config/db.properties`.
+The supplied launcher scripts are intended to start the application from its release directory so the external configuration file can be located.
 
-## 9. First-Time Application Setup
+## 12. First-Time Usage
 
-After launching SuperMart:
+After launching the application:
 
-1. Open **Settings**.
-2. Review the database connection details.
-3. Click **Test Connection** to verify MySQL connectivity.
-4. Configure store information if required.
-5. Open **Dashboard** to review the current business overview.
-6. Use **Products**, **Inventory**, **Customers**, **Suppliers**, and **Employees** to manage records.
-7. Open **Sales** to process a transaction.
-8. Open **Reports** to view or export sales performance information.
+1. Open **Settings** and verify the database connection.
+2. Use **Test Connection** to confirm successful connectivity.
+3. Configure store information if necessary.
+4. Open **Dashboard** to review sales and inventory statistics.
+5. Add or manage products, customers, suppliers, and employees.
+6. Record inventory entries where necessary.
+7. Open **Sales** to create a transaction.
+8. Use **Sales History** to review completed transactions.
+9. Process returns or refunds where applicable.
+10. Open **Reports** to generate or export sales performance reports.
 
-## 10. Generating Reports
+## 13. Sales Reporting
 
-1. Open **Reports** from the sidebar.
-2. Select **View Report** to open the JasperReports viewer.
-3. Select **Export PDF** to save the report as a PDF file.
+The reporting module uses JasperReports and relational database queries to generate sales performance information.
 
-Reports use data stored in the configured MySQL database.
+Available report functionality includes:
 
-## 11. Building from Source Code
+- Transaction-level sales details
+- Product and category information
+- Customer and employee associations
+- Gross sales and discount totals
+- Refund calculations
+- Net sales
+- Cost of goods sold
+- Gross profit
 
-Developers need:
+Reports can be viewed within the application and exported as PDF files.
 
-- JDK 21
-- Apache Maven
-- MySQL Server
+## 14. Build from Source
+
+Developers require JDK 21, Maven, and MySQL Server.
 
 Clone the repository:
 
@@ -271,7 +364,7 @@ git clone https://github.com/Pabodinibuddhima/SuperMart.git
 cd SuperMart
 ```
 
-Configure the database using the instructions above.
+Configure the database as described above.
 
 Build the application:
 
@@ -279,87 +372,108 @@ Build the application:
 mvn clean package
 ```
 
-The standalone JAR is generated at:
+The Maven Shade Plugin produces the executable JAR at:
 
 ```text
 target/SuperMart-1.0-SNAPSHOT-all.jar
 ```
 
-Launch the JAR from the project directory:
+Run it from the project root:
 
 ```bash
 java -jar target/SuperMart-1.0-SNAPSHOT-all.jar
 ```
 
-## 12. Troubleshooting
+The JAR contains the required Java libraries, including the MySQL JDBC driver and JasperReports dependencies.
 
-**Java is not recognized**
+## 15. Troubleshooting
 
-Install Java 21 or newer and ensure `java` is available in the system PATH.
+### Java Not Found
 
-Check with:
+Check the installed Java version:
 
 ```bash
 java -version
 ```
 
-**Database connection failed**
+Install Java 21 if Java is missing or an incompatible version is installed.
+
+### Database Connection Failed
 
 Verify that:
 
 - MySQL Server is running.
 - The `supermart_db` database exists.
-- The username and password are correct.
-- The configured host and port are correct.
-- `config/db.properties` exists.
+- The database tables have been imported.
+- The configured username and password are correct.
+- The database host and port are correct.
+- The `config/db.properties` file exists.
 
-**Access denied for MySQL user**
+### Access Denied
 
-Check the MySQL username, password, and database permissions.
+Verify the database user's credentials and permissions.
 
-**Database tables are missing**
+### Missing Database Tables
 
 Import `database/schema.sql` before using the application.
 
-**Report generation failed**
+### Reports Cannot Be Generated
 
-Check database connectivity and ensure the application was built using the supplied Maven configuration and dependencies.
+Check the database connection and verify that the packaged application includes its reporting dependencies.
 
-## 13. Architecture and Design
+### Application Does Not Start
 
-The project separates responsibilities across:
+Run the application from a terminal or Command Prompt to view any error messages:
 
-- **Model:** Business entities and application data
-- **View:** Java Swing interfaces
-- **DAO:** Database operations
-- **Service:** Business logic and transaction processing
-- **Exception:** Custom application exceptions
-- **Report:** JasperReports integration
-- **Util:** Database configuration and shared utilities
+```bash
+java -jar SuperMart.jar
+```
 
-The application applies object-oriented programming principles and structured database access.
+Ensure the command is executed from the directory containing the JAR.
 
-## 14. Deployment Status
+## 16. Testing and Verification
+
+The application has been tested on Fedora Linux using the standalone executable JAR.
+
+Verified workflows include:
+
+- Database connection and settings
+- Dashboard and management interfaces
+- Sales transaction processing
+- Automatic inventory deduction after a sale
+- Sales and stock transaction history
+- Returns and refunds
+- JasperReports report generation
+- PDF export
+- Launching the application from the extracted release directory
+
+These tests demonstrate the operation of the packaged Java application with its external database configuration.
+
+## 17. Deployment Status
 
 | Deliverable | Status |
 |---|---|
-| Java Swing desktop application | Completed |
-| MySQL database integration | Completed |
-| Sales and inventory functionality | Completed |
+| Java Swing application | Completed |
+| MySQL integration | Completed |
+| Sales and inventory management | Completed |
 | Returns and refunds | Completed |
 | JasperReports and PDF export | Completed |
-| Standalone executable JAR | Completed |
-| Windows and Linux launcher scripts | Completed |
-| Windows native EXE | Optional — not yet packaged |
+| Maven build | Completed |
+| Standalone executable JAR | Completed and tested on Linux |
+| External database configuration | Completed |
+| Windows and Linux launcher scripts | Included |
+| Native Windows EXE | Optional - not included in v1.0.0 |
 
-## 15. Academic Information
+The primary coursework deliverable is the executable JAR.
 
-**Project:** SuperMart — Sales & Inventory Management System
+The native Windows executable is considered an optional enhancement and is not required to run the Java application.
 
-**Module:** Enterprise Application Development
+## 18. Academic Purpose
 
-**Sector:** Sales and Retail Management
+SuperMart was developed as an individual academic coursework project for the Enterprise Application Development module at the National Institute of Business Management (NIBM), under the Diploma in Computer System Design programme.
 
-**Application Type:** Java Desktop Application
+The application demonstrates practical desktop software development, relational database integration, business transaction processing, report generation, and Java application deployment.
 
-**Purpose:** Academic coursework and demonstration.
+**Developed by:** Samaranayake P.B  
+**Student ID:** CODCSD253F-008  
+**Batch:** DCSD25.3F
