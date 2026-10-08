@@ -4,18 +4,20 @@
 
 SuperMart is a Java desktop application developed to support retail sales, inventory control, and business management operations.
 
-## Download the Application
+## Download the SuperMart Application
 
-### [Download SuperMart v1.0.0 - Executable JAR & Release Package](https://github.com/Pabodinibuddhima/SuperMart/releases/tag/v1.0.0)
+**[SuperMart v1.0.0 — Executable JAR & Release Package](https://github.com/Pabodinibuddhima/SuperMart/releases/tag/v1.0.0)**
 
-The GitHub release provides:
+The current GitHub release includes:
 
-- **`SuperMart.jar`** - the executable Java application with required dependencies.
-- **`SuperMart-v1.0.0.zip`** - the complete release package, containing the JAR, database scripts, configuration template, and launcher scripts.
+- **SuperMart.jar** — executable Java application with bundled dependencies.
+- **SuperMart-v1.0.0.zip** — complete application package containing the JAR, database scripts, configuration template, and launcher scripts.
+
+**Windows EXE:** A native Windows executable is currently being prepared and is planned for release by **9 October 2026**. Once completed and tested, it will be uploaded to GitHub Releases.
 
 **System requirements:** Java 21 and MySQL Server.
 
-**Important:** The application requires a configured MySQL database before it can be used. Follow the installation instructions below.
+**Important:** The application requires a configured MySQL database before it can be used. Follow the installation instructions below for database configuration and application setup.
 
 ---
 
@@ -453,20 +455,21 @@ These tests demonstrate the operation of the packaged Java application with its 
 
 | Deliverable | Status |
 |---|---|
-| Java Swing application | Completed |
-| MySQL integration | Completed |
+| Java Swing desktop application | Completed |
+| MySQL database integration | Completed |
 | Sales and inventory management | Completed |
 | Returns and refunds | Completed |
 | JasperReports and PDF export | Completed |
 | Maven build | Completed |
-| Standalone executable JAR | Completed and tested on Linux |
-| External database configuration | Completed |
+| Standalone executable JAR | Completed and tested |
+| GitHub source repository | Published |
+| Database scripts and configuration template | Included |
 | Windows and Linux launcher scripts | Included |
-| Native Windows EXE | Optional - not included in v1.0.0 |
+| Native Windows executable (.exe) | In progress — planned by 9 October 2026 |
 
-The primary coursework deliverable is the executable JAR.
+The executable JAR is the primary application deliverable and is available through GitHub Releases.
 
-The native Windows executable is considered an optional enhancement and is not required to run the Java application.
+A native Windows executable is being prepared as an additional deployment format. The Windows package will be published after successful packaging and testing.
 
 ## 18. Academic Purpose
 
