@@ -1,6 +1,17 @@
 # SuperMart — Sales & Inventory Management System
 
-**Enterprise Application Development | Java Desktop Application**
+**Enterprise Application Development Coursework | Java Desktop Application | Java Swing + MySQL**
+
+## Download SuperMart
+
+**[Download SuperMart v1.0.0 — Executable JAR & Release Package](https://github.com/Pabodinibuddhima/SuperMart/releases/tag/v1.0.0)**
+
+The release provides the executable Java application (`SuperMart.jar`) and, the complete installation package (`SuperMart-v1.0.0.zip`).
+
+**Requirements:** Java 21 or newer and MySQL Server.
+
+See the installation instructions below to configure the database and run the application.
+
 
 SuperMart is a desktop-based Sales and Inventory Management System developed using Java Swing and MySQL. It provides a centralized interface for managing retail business operations, including sales, products, inventory, customers, suppliers, employees, returns, and financial reporting.
 
